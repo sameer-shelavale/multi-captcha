@@ -10,9 +10,9 @@ class MultiCaptcha {
 
     var $secretKey = "{{((o=All-Hands-More-Sail=o))}}"; //you MUST change this in live environment
 
-    var $supportedTypes = array(
+    var $supportedCaptchaTypes = array(
         'recaptcha',    //captcha by google
-        'image',        //image captcha
+        'code',         //user has to type code displayed in captcha image
         'honeypot',     //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
         'checkbox',     //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
         'math',         //Math captcha which asks answer of simple mathematical questions
@@ -20,10 +20,20 @@ class MultiCaptcha {
         'animated',     //GIF animated captcha
     );
 
-    var $selectedTypes = array('recaptcha');    //multiple types can also be specified,
-                                                //in that case the captcha will be randomized from the selected types
+    var $enabledCaptchaTypes = array();    //multiple types can also be specified,
+                                    //in that case the captcha will be randomized from the selected types
 
 
+    function MultiCaptcha( $enableTypes ){
+        foreach( $enableTypes as $type ){
+            if( !in_array( $type,  $this->enabledCaptchaTypes ) ){
+                include_once( 'class.'.$type.'.php' );
+                $this->enabledCaptchaTypes[] = $type;
+
+            }
+        }
+
+    }
     /*
      * function captcha()
      * @return html of the captcha code, this is to be inserted in the forms directly
