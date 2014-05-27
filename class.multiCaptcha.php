@@ -6,7 +6,8 @@
  * Time: 8:26 PM
  */
 
-include_once( 'class.captchafactory.php');
+include_once( 'class.captchafactory.php' );
+include_once( 'class.CaptchaCrypt.php' );
 
 class MultiCaptcha {
 
@@ -112,25 +113,10 @@ class MultiCaptcha {
                 return $key;
             }
         }
-
+        return false;
     }
 
 
-    public function decrypt( $cipherText ){
 
-        $ivSize = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC );
-
-        $cipherTextDec = base64_decode( $cipherText );
-
-        # retrieves the IV, iv_size should be created using mcrypt_get_iv_size()
-        $ivDec = substr( $cipherTextDec, 0, $ivSize );
-
-        # retrieves the cipher text (everything except the $iv_size in the front)
-        $cipherTextDec = substr( $cipherTextDec, $ivSize );
-
-        # may remove 00h valued characters from end of plain text
-        return mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $this->secretKey, $cipherTextDec, MCRYPT_MODE_CBC, $ivDec );
-
-    }
 
 }
