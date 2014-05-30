@@ -12,6 +12,11 @@ class BaseCaptcha {
     var $secretKey = '';
     var $life = '';         //life/validity time of captcha in hours
 
+    public function BaseCaptcha( $secKey, $captchaLife ){
+        $this->secretKey = $secKey;
+        $this->life = $captchaLife;
+    }
+
     /*
      * function getHtml()
      * @return html of the captcha code, this is to be inserted in the forms directly
@@ -44,6 +49,14 @@ class BaseCaptcha {
 
     }
 
+
+    public function setOptions( $options = array() ){
+        foreach( $options as $key => $value ){
+            if( property_exists( $this, $key ) ){
+                $this->$key = $value;
+            }
+        }
+    }
 
     public function encrypt( $answer, $captchaType ){
 
