@@ -6,41 +6,88 @@
  * Time: 8:26 PM
  */
 
-include_once( 'class.captchafactory.php' );
-include_once( 'class.CaptchaCrypt.php' );
+include_once( 'class.BaseCaptcha.php' );
 
-class MultiCaptcha {
+class MultiCaptcha extends BaseCaptcha {
 
     var $secretKey = "{{((o=All-Hands-More-Sail=o))}}"; //you MUST change this in live environment
-
-    var $supportedTypes = array(
-        'recaptcha' => 'Recaptcha',    //captcha by google
-        'code'      => 'CodeCaptcha',  //user has to type code displayed in captcha image
-        'honeypot'  => 'HoneyPot',     //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
-        'checkbox'  => 'Checkbox',     //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
-        'math'      => 'Math',         //Math captcha which asks answer of simple mathematical questions
-        'ascii'     => 'Ascii',        //ASCII captcha, displays the captcha in ASCII decorative style
-        'animated'  => 'Animated',     //GIF animated captcha
-    );
-
-    var $enabledTypes = array();    //multiple types can also be specified,
-                                    //in that case the captcha will be randomized from the selected types
-
+    var $life = 10;     //validity period of captcha in HOURS
+    //it will be invalid after this time
+    //basically we will remove all logs of successful captchas older than this amount of time.
+    //this will reduce load on database
 
     var $customFieldName = null;    //use custom field name for captcha instead of random names
-                                    //this is not applicable to Recaptcha
-                                    //if you specify custom field, it will also add a extra hidden field which will contain the encrypted code
-                                    //this extra field will be named $customFieldName."_challenge"
+    //this is not applicable to Recaptcha
+    //if you specify custom field, it will also add a extra hidden field which will contain the encrypted code
+    //this extra field will be named $customFieldName."_challenge"
 
-    function MultiCaptcha( $enableTypes ){
-        foreach( $enableTypes as $type ){
-            $this->enableType( $type );
-        }
+    var $supportedTypes = array(
+        'recaptcha' => 'Recaptcha',     //captcha by google
+        'image'     => 'ImageCaptcha',  //user has to type code displayed in captcha image
+        'honeypot'  => 'HoneyPot',      //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
+        'checkbox'  => 'Checkbox',      //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
+        'math'      => 'Math',          //Math captcha which asks answer of simple mathematical questions
+        'ascii'     => 'Ascii',         //ASCII captcha, displays the captcha in ASCII decorative style
+        'animated'  => 'Animated',      //GIF animated captcha
+    );
 
+    var $enabledTypeOptions = array();    //multiple types can also be specified,
+    //in that case the captcha will be randomized from the selected types
+
+    var $objects = array();
+
+    /*
+     * constructor
+     */
+    function MultiCaptcha( $secretKey, $typeOptions= array(), $life = 10, $customFieldName= null){
+        $this->secretKey = $secretKey;
+        $this->life = $life;
+        $this->customFieldName = $customFieldName;
+        $this->setOptions( $typeOptions );
     }
 
-    function enableType( $type ){
-        $this->enabledTypes[] = $type;
+
+    /* function setOptions()
+     *      Sets options for various captcha types.
+     *      It also updates the options in the captcha objects, if the objects are initialized
+     * @param $typeOptions Array of options with captchaType as keys
+     *      e.g. array(
+     *              'recaptcha' => array(
+     *                  'publicKey' => 'mypublickey',
+     *                  'privateKey'=> 'myprivatekey'
+     *              ),
+     *              'image' => array(
+     *                  'maxCodeLength' => '8'
+     *              )
+     *          );
+     *      so we can set options for multiple captcha types at once
+     *      NOTE: This function overrides the setOptions() in BaseCaptcha
+     */
+    function setOptions( $typeOptions = array()){
+        foreach( $typeOptions as $type => $options ){
+            if( is_array( $this->enabledTypeOptions[$type] ) ){
+                $this->enabledTypeOptions[$type] = array_merge( $this->enabledTypeOptions[ $type ], $options );
+            }else{
+                $this->enabledTypeOptions[$type] = $options ;
+            }
+            //if the captcha type object is already initialized we will update the options in the object
+            if( isset( $this->objects[$type] ) ){
+                $this->objects[$type]->setOptions( $this->enabledTypeOptions[$type] );
+            }
+        }
+    }
+
+    public function getObject( $type ){
+        if( !isset( $this->objects[$type] ) ){
+            include_once( 'types/'.$type.'/class.'.$type.'.php' );
+            $this->objects[$type] = new $this->supportedTypes[$type](
+                $this->secretKey,
+                $this->life,
+                $this->customFieldName
+            );
+            $this->objects[$type]->setOptions( $this->enabledTypeOptions[$type] );
+        }
+        return $this->objects[$type];
     }
 
 
@@ -49,74 +96,58 @@ class MultiCaptcha {
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
     public function getHtml( $type = null ){
-        if( count( $this->enabledTypes ) == 0 ){
+
+        if( count( $this->enabledTypeOptions ) == 0 ){
             return false;
         }
 
         if( !$type ){
             //no type specified, use random captcha from enabled types
-            $type = array_rand( $this->enabledTypes );
-        }elseif( !isset( $this->enabledTypes[ $type ] ) ){
+            $type = array_rand( $this->enabledTypeOptions );
+        }elseif( !isset( $this->enabledTypeOptions[ $type ] ) ){
             //selected type of captcha does not exist or is not enabled
             return false;
         }
 
-        $captcha = new $this->enabledTypes[$type];
+        $obj = $this->getObject( $type );
 
-        return $captcha->getHtml();
-
+        return $obj->getHtml();
     }
 
 
     /*
-     * function validate()
+     * function validateForm()
      * @param $data posted data or array containing the customField value and challangeFieldValue
      *              for example if $customFieldName is "my_captcha_field"
      *              then you can pass array( 'my_captcha_field'=>$_POST['my_captcha_field'], 'my_captcha_field_response'=>$_POST['my_captcha_field_challange'] )
      * @param $remoteAddress remote IP address
      * @return boolean
      */
-    public function validate( $data=array(), $remoteAddress = null ){
+    public function validateForm( $data = array(), $remoteAddress = null ){
         $fieldName = $this->customFieldName;
+
+        if( isset( $this->enabledTypeOptions['recaptcha'] )
+            && isset( $data['recaptcha_response_field'] )
+            && isset( $data['recaptcha_challenge_field'] ) ){
+
+            $obj = $this->getObject( 'recaptcha' );
+
+            return $obj->validate( $data, $remoteAddress );
+        }
 
         //if customFieldName is disabled, we are using random field names
         //try find the field name
         if( !$fieldName ){
-            $fieldName = $this->getCaptchaFieldName( $data );
-        }
-
-
-        if( !$fieldName ){
-            //There is no captcha field in the submitted data,
-            //validation fails
-            return false;
-        }
-
-
-
-        return false;
-    }
-
-
-    /*
-     * function getCaptchaFieldName()
-     *      this function finds the name of chaptcha response field from the submitted data
-     *      it does so by trying to decrypt each field name in the submitted form
-     * @param $data posted data
-     * @return string field name for the captcha
-     */
-    public function getCaptchaFieldName( $data ){
-        foreach( $data as $key => $value ){
-            //check if the key matches our particular challange format after decryption
-            if( preg_match( "/^([a-zA-Z0-9]+)_([a-zA-Z0-9]{6})_([a-zA-Z0-9]{4,9})$/", $this->decrypt( $key ) ) ){
-                //this is captcha field
-                return $key;
+            foreach( $data as $key => $value ){
+                //check if the key matches our particular challange format after decryption
+                if( $this->validate( $key, $value ) ){
+                    //this is captcha field
+                    return true;
+                }
             }
         }
+
         return false;
     }
-
-
-
 
 }
