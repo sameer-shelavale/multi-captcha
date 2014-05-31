@@ -76,7 +76,7 @@ class BaseCaptcha {
 
         $cipherTextDec = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $this->secretKey, $plainText, MCRYPT_MODE_CBC, $iv ) ;
 
-        return base64_encode( $iv.$cipherTextDec );
+        return rtrim( base64_encode( $iv.$cipherTextDec ), '=' ) ;
 
     }
 
