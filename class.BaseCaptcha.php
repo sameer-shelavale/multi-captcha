@@ -10,11 +10,14 @@
 class BaseCaptcha {
 
     var $secretKey = '';
-    var $life = '';         //life/validity time of captcha in hours
+    var $life = 10;         //life/validity time of captcha in hours
+    var $customFieldName = null;
+    var $cipherIsFieldName = true;
 
-    public function BaseCaptcha( $secKey, $captchaLife ){
+    public function BaseCaptcha( $secKey, $captchaLife, $customFieldName = null ){
         $this->secretKey = $secKey;
         $this->life = $captchaLife;
+        $this->customFieldName = $customFieldName;
     }
 
     /*
@@ -51,6 +54,7 @@ class BaseCaptcha {
 
 
     public function setOptions( $options = array() ){
+
         foreach( $options as $key => $value ){
             if( property_exists( $this, $key ) ){
                 $this->$key = $value;
@@ -117,9 +121,9 @@ class BaseCaptcha {
             return false;
         }
 
-        if( preg_match( "/^([a-zA-Z0-9]{4,9})_([a-zA-Z0-9]{6})_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)$/", $plainText, $matches ) ){
-            $uid = $matches[1];
-            $time = $matches[2];
+        if( preg_match( "/^([a-zA-Z0-9]{4,9})_([a-zA-Z0-9]{6})_([a-zA-Z0-9]*)_([a-zA-Z0-9]+)$/", $plainText, $matches ) ){
+            $uid = base_convert( $matches[1], 36, 10 );
+            $time = base_convert( $matches[2], 36, 10 );
             $correctAnswer = $matches[3];
             $type = $matches[4];
 
@@ -129,25 +133,32 @@ class BaseCaptcha {
                 return false;
             }
 
+
             //check if answer is correct
             if( $answer != $correctAnswer ){
                 return false;
             }
 
             //check if this captcha is answered successfully recently
-            if( !$this->isAnsweredRecently() ){
+            if( $this->isAnsweredRecently() ){
                 //this captcha has been answered successfully recently
                 //or it can not be saved in log of recent answers right now
                 return false;
             }else{
                 $this->recordSuccessfulAnswer();
+                return true;
             }
-
 
         }
         return false;
-
     }
 
+    public function isAnsweredRecently(){
+        return false;
+    }
+
+    public function recordSuccessfulAnswer(){
+
+    }
 
 } 

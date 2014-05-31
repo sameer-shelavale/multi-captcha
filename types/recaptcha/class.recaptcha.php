@@ -5,8 +5,9 @@
  * Date: 5/14/14
  * Time: 5:39 PM
  */
+include_once( 'recaptchalib.php' );
 
-class Recaptcha extends CaptchaFactory {
+class Recaptcha extends BaseCaptcha {
     var $publicKey = false;
     var $privateKey = false;
 
