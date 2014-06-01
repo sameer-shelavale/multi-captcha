@@ -8,14 +8,22 @@
 //Public Key: 	6Le1XPQSAAAAAPteoelqqH7JQzKGOikcTc3HrpAA
 //Private Key: 	6Le1XPQSAAAAABu9LOXfj6Wxvec_cQFXCHjOJzG3
 
+
 include_once( "../class.multiCaptcha.php");
+
 
 $captcha = new MultiCaptcha(
     "form1-secret-key",
-    array(
+    /*array(
         'honeypot' => array(
             'description'=> "Get lost you bot",
             'class' => 'error'
+        )
+    )*/
+    array(
+        'math' => array(
+            'description'=> "Answer following question if you are human",
+            'level' => 4
         )
     )
 );
