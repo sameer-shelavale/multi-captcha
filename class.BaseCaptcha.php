@@ -121,7 +121,7 @@ class BaseCaptcha {
             return false;
         }
 
-        if( preg_match( "/^([a-zA-Z0-9]{4,9})_([a-zA-Z0-9]{6})_([a-zA-Z0-9]*)_([a-zA-Z0-9]+)$/", $plainText, $matches ) ){
+        if( preg_match( "/^([a-zA-Z0-9]{4,9})_([a-zA-Z0-9]{6})_([a-zA-Z0-9\-]*)_([a-zA-Z0-9]+)$/", $plainText, $matches ) ){
             $uid = base_convert( $matches[1], 36, 10 );
             $time = base_convert( $matches[2], 36, 10 );
             $correctAnswer = $matches[3];
