@@ -26,7 +26,7 @@ class MultiCaptcha extends BaseCaptcha {
         'image'     => 'ImageCaptcha',  //user has to type code displayed in captcha image
         'honeypot'  => 'HoneyPot',      //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
         'checkbox'  => 'Checkbox',      //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
-        'math'      => 'Math',          //Math captcha which asks answer of simple mathematical questions
+        'math'      => 'MathCaptcha',   //Math captcha which asks answer of simple mathematical questions
         'ascii'     => 'Ascii',         //ASCII captcha, displays the captcha in ASCII decorative style
         'animated'  => 'Animated',      //GIF animated captcha
     );
