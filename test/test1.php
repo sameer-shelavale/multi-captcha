@@ -19,11 +19,17 @@ $captcha = new MultiCaptcha(
             'description'=> "Get lost you bot",
             'class' => 'error'
         )
-    )*/
+    )
     array(
         'math' => array(
             'description'=> "Answer following question if you are human",
             'level' => 4
+        )
+    )*/
+    array(
+        'image' => array(
+            'maxCodeLength' => 8,
+            'font'=>'../types/image/comic.ttf'
         )
     )
 );
