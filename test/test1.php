@@ -25,11 +25,22 @@ $captcha = new MultiCaptcha(
             'description'=> "Answer following question if you are human",
             'level' => 4
         )
-    )*/
+    )
     array(
         'image' => array(
             'maxCodeLength' => 8,
             'font'=>'../types/image/comic.ttf'
+        )
+    )*/
+    array(
+        'ascii' => array(
+            'maxCodeLength' => 8,
+            'fontPath'=>'../types/ascii/fonts/',
+            'fonts'=>array(
+                'banner'=> 4,
+                'doom'=> 8,
+                'small'=>'8'
+            )
         )
     )
 );
