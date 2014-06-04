@@ -6,71 +6,152 @@
  * Time: 5:43 PM
  */
 
-namespace types\image;
 
+class ImageCaptcha extends BaseCaptcha {
 
-class ImageCaptcha {
+    var $minCodeLength = 4; // minimum length of code displayed on captcha image
+    var $maxCodeLength = 10; // maximum length of code displayed on captcha image( max value is 20 )
+    var $maxRequired = 5;   // maximum number of characters that can be asked to identify
+    var $minRequired = 3;   // minimum number of characters that can be asked to identify
 
-    var $codeLength = 8;    // total characters in captcha
     var $noiseLevel = 25;   // number of background noisy characters
-    var $width      = 100;  // width of image in pixels
-    var $height     = 30;   // height of the image in pixels
+    var $width      = 150;  // width of image in pixels
+    var $height     = 40;   // height of the image in pixels
 
     var $font = 'comic.ttf';
     var $maxFontSize = 15;
     var $minFontSize = 13;
 
-
+    private static $numberTypes = array(
+        array( '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '17', '16', '18', '19', '20'),
+        array( 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'),
+        array( 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fiftheenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth'),
+        array( '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '17th', '16th', '18th', '19th', '20th')
+    );
 
     public function getHtml(){
+        $data = $this->generateQuestion( $this->level );
 
-    }
+        $cipher = $this->encrypt( $data['answer'], 'image' );
 
-    function generateQuestion( $codeLength = 8, $requiredCharacters = 4 ){
-        $symbols1 = array( '+', '-', 'X', '/' );
-        $symbols2 = array( '+', '-', 'X' );
-
-        $q = array();
-        $q[] = rand(0,10);
-        for( $i=1; $i < $level; $i++ ){
-            //select operator
-
-            if( $i == 1 && $q[0] != 0 ){
-                $operator = $symbols1[array_rand( $symbols1 )];
-            }else{
-                $operator = $symbols2[array_rand( $symbols2 )];
-            }
-
-            //select operand
-            if( $operator == '/' ){
-                $factors = $this->getFactors( $q[0]);
-                $operand = $factors[array_rand( $factors )];
-            }elseif( $operator == 'X'  ){
-                $operand = rand( 0, 5 );
-            }else{
-                $operand = rand( 0, 10 );
-            }
-            $q[] = $operator;
-            $q[] = $operand;
+        if( $this->customFieldName ) {
+            $fieldName = $this->customFieldName;
+        }else{
+            //use cipher as field name
+            $fieldName = $cipher;
         }
 
-        $result['question'] = implode( ' ',$q ).' = ';
-        $result['answer'] = "{$this->expEval( $q )}";
+        if( $this->id ){
+            $id = "id=\"{$this->id}\"";
+        }
+
+        if( $this->class ){
+            $class = "class=\"{$this->class}\"";
+        }
+
+        if( $this->style ){
+            $style = "style=\"{$this->style}\"";
+        }
+
+        if( $fieldName == $cipher ){
+            $html = "<img src=\"{$this->getImage( $data['code'] )}\" />";
+            //$html = $this->description.'<br/>';
+            $html .= $data['question'].'<br/>';
+            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
+        }else{
+            $html = "<img src=\"{$this->getImage( $data['code'] )}\" />";
+            //$html = $this->description.'<br/>';
+            $html .= $data['question'].'<br/>';
+            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
+            $html .= '<input type="hidden" name="'.$fieldName.'_challenge" value="'.$cipher.'" /> ';
+        }
+
+        return $html;
+    }
+
+    function generateQuestion( ){
+
+        $codeLength = rand( $this->minCodeLength, $this->maxCodeLength );
+
+        $code = $this->generateCode( $codeLength ); //code to be displayed in image
+
+        $type = rand( 1,3);
+        switch( $type ){
+            case 1:
+                //ast for characters at starting position
+                $required = rand( $this->minRequired, min( $this->maxRequired, $codeLength ) );
+                $answer = substr( $code, 0, $required );
+                $desc = array(
+                        "Please enter $required characters at start of the code in image",
+                        "Please enter first $required characters of code in image",
+                );
+                $questionText = $desc[ array_rand( $desc ) ];
+                break;
+            case 2:
+                //ask for characters at end
+                $required = rand( $this->minRequired, min( $this->maxRequired, $codeLength )  );
+                $answer = substr( $code, 0-$required );
+                $desc = array(
+                        "Please enter $required characters at end of the code in image",
+                        "Please enter last  $required characters of code in image",
+                );
+                $questionText = $desc[ array_rand( $desc ) ];
+                break;
+            case 3:
+            default:
+                //ask for characters at random position
+
+                $required = rand( $this->minRequired, min( $this->maxRequired, $codeLength ) );
+                $ansSet = array();
+                $pool = array();
+
+                $numType = rand( 0, 3 ); // from $this->numberTypes
+                for( $i=1; $i <= $codeLength; $i++ ){
+                    $pool[] = $i;
+                }
+                for( $i=1; $i <= $required; $i++ ){
+                    $tmp = array_rand( $pool );
+                    $idx = $pool[$tmp];
+                    $ansSet[] = $idx;
+                    unset( $pool[$tmp] );
+                }
+                sort( $ansSet );
+                $answer = '';
+                foreach( $ansSet as $key=>$ans ){
+                    $ansSet[$key] = self::$numberTypes[ $numType ][ $ans-1];
+                    $answer .= $code[ $ans-1 ];
+                }
+                $ansSet = implode( ', ', $ansSet );
+                if( $numType == 0 || $numType == 1 ){
+                    $questionText = "Please enter characters at position {$ansSet} in the image";
+                }else{
+                    $questionText = "Please enter {$ansSet} characters in the image";
+                }
+                break;
+        }
+
+        $result['question'] = $questionText;
+        $result['answer'] = $answer;
+        $result['code'] = $code;
 
         return $result;
     }
 
-    function GenerateCode( ){
-        $r = rand( 0, 31-$this->codeLength-1 );
-        $this->code = substr( md5(time()), $r, $this->codeLength );
+    function generateCode( $length ){
+        $set = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $result = '';
+        for( $i=0; $i < $length; $i++ ){
+            $result .= $set[ rand(0, strlen( $set )) ];
+        }
+        return $result;
     }
 
 
-
-    function getImage( $noise = true ) {
+    function getImage( $code,  $noise = true ) {
+        $codeLength = strlen( $code );
 
         //calculate font sizes so that things fit in on image
-        $this->maxFontSize = $this->width / ( $this->codeLength + 1 );
+        $this->maxFontSize = $this->width / ( $codeLength + 1 );
         if( $this->maxFontSize > $this->height * 2 / 3 ){
             $this->maxFontSize > intval( $this->height * 2 / 3 );
         }
@@ -106,6 +187,7 @@ class ImageCaptcha {
         if( $noise ){
             // add random characters in background with random position, angle, color
             for( $i=0;  $i < $this->noiseLevel; $i++ ){
+
                 $size = intval( rand( $this->maxFontSize/2, $this->maxFontSize-2 ) );
                 $angle = intval( rand(0,360) );
                 $x = intval( rand( 10, $this->width-5 ) );
@@ -168,7 +250,8 @@ class ImageCaptcha {
         }
 
         // output the captcha code on top of everything
-        for( $i=0, $x=5; $i < $this->codeLength; $i++ ){
+        for( $i=0, $x=5; $i < $codeLength; $i++ ){
+
             //generate random text color
             $r = intval( rand(0,128) );
             $g = intval( rand(0,128) );
@@ -184,7 +267,7 @@ class ImageCaptcha {
             $shadow = ImageColorAllocate( $image, $r+128, $g+128, $b+128 );
             $size = intval( rand( $this->minFontSize, $this->maxFontSize ) );
             $angle = intval( rand(-30,30) );
-            $text = strtoupper( substr( $this->code, $i, 1 ) );
+            $text = substr( $code, $i, 1 );
 
             //add the character shadow
             ImageTTFText(
