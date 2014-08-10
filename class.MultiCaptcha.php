@@ -5,10 +5,11 @@
  * Date: 5/12/14
  * Time: 8:26 PM
  */
+namespace MultiCaptcha;
 
-include_once( 'class.BaseCaptcha.php' );
+include_once( dirname(__FILE__).'/class.BaseCaptcha.php' );
 
-class MultiCaptcha extends BaseCaptcha {
+class Captcha extends BaseCaptcha {
 
     var $secretKey = "{{((o=All-Hands-More-Sail=o))}}"; //you MUST change this in live environment
     var $life = 10;     //validity period of captcha in HOURS
@@ -28,7 +29,8 @@ class MultiCaptcha extends BaseCaptcha {
         'checkbox'  => 'Checkbox',      //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
         'math'      => 'MathCaptcha',   //Math captcha which asks answer of simple mathematical questions
         'ascii'     => 'AsciiCaptcha',  //ASCII captcha, displays the captcha in ASCII decorative style
-        'animated'  => 'Animated',      //GIF animated captcha
+        'gif'       => 'GifCaptcha',    //GIF animated captcha
+        'video'     => 'VideoCaptcha'   //Video Captcha
     );
 
     var $enabledTypeOptions = array();    //multiple types can also be specified,
@@ -39,10 +41,11 @@ class MultiCaptcha extends BaseCaptcha {
     /*
      * constructor
      */
-    function MultiCaptcha( $secretKey, $typeOptions= array(), $life = 10, $customFieldName= null){
+    function __construct( $secretKey, $typeOptions= array(), $life = 10, $customFieldName= null){
         $this->secretKey = $secretKey;
         $this->life = $life;
         $this->customFieldName = $customFieldName;
+
         $this->setOptions( $typeOptions );
     }
 
@@ -79,8 +82,10 @@ class MultiCaptcha extends BaseCaptcha {
 
     public function getObject( $type ){
         if( !isset( $this->objects[$type] ) ){
-            include_once( 'types/'.$type.'/class.'.$type.'.php' );
-            $this->objects[$type] = new $this->supportedTypes[$type](
+            include_once( dirname(__FILE__).'/types/'.$type.'/class.'.$type.'.php' );
+
+            $name = 'MultiCaptcha\\'.$this->supportedTypes[$type]; //Investigate Why is it not working without namespace prefix? we are in same namespace
+            $this->objects[$type] = new $name(
                 $this->secretKey,
                 $this->life,
                 $this->customFieldName
