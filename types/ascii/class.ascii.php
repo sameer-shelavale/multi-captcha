@@ -9,6 +9,7 @@
  * the PhpFiglet Class is property of Lucas Baltes
  *
  */
+namespace MultiCaptcha;
 
 include_once( "class.phpfiglet.php" );
 
@@ -33,44 +34,7 @@ class AsciiCaptcha extends BaseCaptcha {
         array( '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '17th', '16th', '18th', '19th', '20th')
     );
 
-    public function getHtml(){
-        $data = $this->generateQuestion( $this->level );
-        $cipher = $this->encrypt( $data['answer'], 'image' );
 
-        if( $this->customFieldName ) {
-            $fieldName = $this->customFieldName;
-        }else{
-            //use cipher as field name
-            $fieldName = $cipher;
-        }
-
-        if( $this->id ){
-            $id = "id=\"{$this->id}\"";
-        }
-
-        if( $this->class ){
-            $class = "class=\"{$this->class}\"";
-        }
-
-        if( $this->style ){
-            $style = "style=\"{$this->style}\"";
-        }
-
-        if( $fieldName == $cipher ){
-            $html = $this->getFiglet( $data['code'] );
-            //$html = $this->description.'<br/>';
-            $html .= $data['question'].'<br/>';
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-        }else{
-            $html = $this->getFiglet( $data['code'] );
-            //$html = $this->description.'<br/>';
-            $html .= $data['question'].'<br/>';
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-            $html .= '<input type="hidden" name="'.$fieldName.'_challenge" value="'.$cipher.'" /> ';
-        }
-
-        return $html;
-    }
 
     function generateQuestion( ){
 
@@ -133,9 +97,10 @@ class AsciiCaptcha extends BaseCaptcha {
                 break;
         }
 
-        $result['question'] = $questionText;
+        $result['question']['type'] = 'ascii';
+        $result['question']['content'] = $this->getFiglet( $code );
+        $result['description'] = $questionText;
         $result['answer'] = $answer;
-        $result['code'] = $code;
 
         return $result;
     }

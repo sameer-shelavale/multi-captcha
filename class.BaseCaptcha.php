@@ -6,15 +6,21 @@
  * Time: 5:41 PM
  * Provides basic functions of captcha class
  */
+namespace MultiCaptcha;
 
 class BaseCaptcha {
+    var $language = 'en';
+    var $tooltip = array();
+    var $helpHtml = array();
 
     var $secretKey = '';
     var $life = 10;         //life/validity time of captcha in hours
     var $customFieldName = null;
     var $cipherIsFieldName = true;
+    var $theme = 'Default';
+    var $themeOptions = array();
 
-    public function BaseCaptcha( $secKey, $captchaLife, $customFieldName = null ){
+    public function __construct( $secKey, $captchaLife, $customFieldName = null ){
         $this->secretKey = $secKey;
         $this->life = $captchaLife;
         $this->customFieldName = $customFieldName;
@@ -25,7 +31,23 @@ class BaseCaptcha {
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
     public function getHtml(){
-        return '';
+
+        $data = $this->generateQuestion( $this->level );
+
+        $data['cipher'] = $this->encrypt( $data['answer'], 'math' );
+
+        $data['customFieldName'] = $this->customFieldName;
+        $data['tooltip'] = $this->tooltip[ $this->language ];
+        $data['helpHtml'] = $this->helpHtml[ $this->language ];
+
+        $themeName = $this->theme. 'Theme' ;
+        include_once( dirname( __FILE__ ).'/themes/'.$themeName.'.php' );
+        if( class_exists( $themeName ) ){
+            $themeObj = new $themeName( $this->themeOptions );
+        }else{
+            $themeObj = new DefaultTheme( $this->themeOptions );
+        }
+        return $themeObj->render( $data );
     }
 
 
@@ -153,6 +175,27 @@ class BaseCaptcha {
         return false;
     }
 
+    /***********************************************************************
+     * function generateQuestion()
+     * @return array() returns captcha question data as array.
+     * following elements are required to be passed
+     *      question    - will contain html of any image, video or even main text of the question
+     *      description - will be text description of the question telling what is expected
+     *      answer      - the correct answer
+     *      tooltip     - will contain help text for solving the captcha
+     *      refreshUrl  - url to refresh the captcha
+     *
+     ***********************************************************************/
+    public function generateQuestion(){
+        return array(
+            'question'  => null,
+            'description'=>null,
+            'answer'    => null,
+            'tooltip'   => null,
+            'refreshUrl'=> null
+        );
+    }
+
     public function isAnsweredRecently(){
         return false;
     }
@@ -160,5 +203,6 @@ class BaseCaptcha {
     public function recordSuccessfulAnswer(){
 
     }
+
 
 } 
