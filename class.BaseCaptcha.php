@@ -40,7 +40,7 @@ class BaseCaptcha {
         $data['tooltip'] = $this->tooltip[ $this->language ];
         $data['helpHtml'] = $this->helpHtml[ $this->language ];
 
-        $themeName = $this->theme. 'Theme' ; var_dump( $themeName );
+        $themeName = $this->theme. 'Theme' ;
         include_once( dirname( __FILE__ ).'/themes/'.$themeName.'.php' );
         if( class_exists( $themeName ) ){
             $themeObj = new $themeName( $this->themeOptions );
