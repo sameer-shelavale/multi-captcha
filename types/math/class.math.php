@@ -5,53 +5,22 @@
  * Date: 5/14/14
  * Time: 5:39 PM
  */
+namespace MultiCaptcha;
 
 class MathCaptcha extends BaseCaptcha {
 
     var $description = "Answer following question if you are human";
     var $id = false;
     var $class = false;
-    var $style = false;
     var $level = 3;
 
-    public function getHtml(){
+    var $tooltip = array(
+        'en' => 'Answer the above mathematical question.'
+    );
 
-        $data = $this->generateQuestion( $this->level );
-
-        $cipher = $this->encrypt( $data['answer'], 'math' );
-
-        if( $this->customFieldName ) {
-            $fieldName = $this->customFieldName;
-        }else{
-            //use cipher as field name
-            $fieldName = $cipher;
-        }
-
-        if( $this->id ){
-            $id = "id=\"{$this->id}\"";
-        }
-
-        if( $this->class ){
-            $class = "class=\"{$this->class}\"";
-        }
-
-        if( $this->style ){
-            $style = "style=\"{$this->style}\"";
-        }
-
-        if( $fieldName == $cipher ){
-            $html = $this->description.'<br/>';
-            $html .= $data['question'];
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-        }else{
-            $html = $this->description.'<br/>';
-            $html .= $data['question'];
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-            $html .= '<input type="hidden" name="'.$fieldName.'_challenge" value="'.$cipher.'" /> ';
-        }
-
-        return $html;
-    }
+    var $helpHtml = array(
+        'en' => 'Pleae answer the given mathematical question to prove that you are not a automated bot. <br/>It is required for avoiding spam.'
+    );
 
 
     function generateQuestion( $level = 3 ){
@@ -82,8 +51,12 @@ class MathCaptcha extends BaseCaptcha {
             $q[] = $operand;
         }
 
-        $result['question'] = implode( ' ',$q ).' = ';
+        $result['question']['type'] = 'text';
+        $result['question']['content'] = implode( ' ',$q ).' = ';
+
+        $result['description'] = $this->description;
         $result['answer'] = "{$this->expEval( $q )}";
+
 
         return $result;
     }
