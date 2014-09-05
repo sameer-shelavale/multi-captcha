@@ -12,11 +12,11 @@
 include_once( "../class.multiCaptcha.php");
 
 
-$captcha = new MultiCaptcha(
+$captcha = new \MultiCaptcha\Captcha(
     "form1-secret-key",
     /*array(
         'honeypot' => array(
-            'description'=> "Get lost you bot",
+            'description'=> "Leave this field empty if you are human",
             'class' => 'error'
         )
     )
@@ -29,7 +29,8 @@ $captcha = new MultiCaptcha(
     array(
         'image' => array(
             'maxCodeLength' => 8,
-            'font'=>'../types/image/comic.ttf'
+            'font'=>'../types/image/comic.ttf',
+            'width'=>175
         )
     )*/
     array(

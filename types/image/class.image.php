@@ -6,6 +6,7 @@
  * Time: 5:43 PM
  */
 
+namespace MultiCaptcha;
 
 class ImageCaptcha extends BaseCaptcha {
 
@@ -28,46 +29,6 @@ class ImageCaptcha extends BaseCaptcha {
         array( 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fiftheenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth'),
         array( '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '17th', '16th', '18th', '19th', '20th')
     );
-
-    public function getHtml(){
-        $data = $this->generateQuestion( $this->level );
-
-        $cipher = $this->encrypt( $data['answer'], 'image' );
-
-        if( $this->customFieldName ) {
-            $fieldName = $this->customFieldName;
-        }else{
-            //use cipher as field name
-            $fieldName = $cipher;
-        }
-
-        if( $this->id ){
-            $id = "id=\"{$this->id}\"";
-        }
-
-        if( $this->class ){
-            $class = "class=\"{$this->class}\"";
-        }
-
-        if( $this->style ){
-            $style = "style=\"{$this->style}\"";
-        }
-
-        if( $fieldName == $cipher ){
-            $html = "<img src=\"{$this->getImage( $data['code'] )}\" />";
-            //$html = $this->description.'<br/>';
-            $html .= $data['question'].'<br/>';
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-        }else{
-            $html = "<img src=\"{$this->getImage( $data['code'] )}\" />";
-            //$html = $this->description.'<br/>';
-            $html .= $data['question'].'<br/>';
-            $html .= '<input type="text" name="'.$fieldName.'" value="" '.$id.' '.$class.' '.$style.' /> ';
-            $html .= '<input type="hidden" name="'.$fieldName.'_challenge" value="'.$cipher.'" /> ';
-        }
-
-        return $html;
-    }
 
     function generateQuestion( ){
 
@@ -130,9 +91,11 @@ class ImageCaptcha extends BaseCaptcha {
                 break;
         }
 
-        $result['question'] = $questionText;
+        $result['question']['type'] = 'image';
+        $result['question']['url'] = $this->getImage( $code );
+        $result['description'] = $questionText;
         $result['answer'] = $answer;
-        $result['code'] = $code;
+
 
         return $result;
     }
@@ -306,5 +269,4 @@ class ImageCaptcha extends BaseCaptcha {
     }
 
 
-
-} 
+}
