@@ -9,6 +9,9 @@
 namespace MultiCaptcha;
 
 class BaseCaptcha {
+    var $language = 'en';
+    var $tooltip = array();
+    var $helpHtml = array();
 
     var $secretKey = '';
     var $life = 10;         //life/validity time of captcha in hours
@@ -18,7 +21,6 @@ class BaseCaptcha {
     var $themeOptions = array();
 
     public function __construct( $secKey, $captchaLife, $customFieldName = null ){
-        var_dump( 'dhurrrr' );
         $this->secretKey = $secKey;
         $this->life = $captchaLife;
         $this->customFieldName = $customFieldName;
@@ -33,16 +35,17 @@ class BaseCaptcha {
         $data = $this->generateQuestion( $this->level );
 
         $data['cipher'] = $this->encrypt( $data['answer'], 'math' );
+
         $data['customFieldName'] = $this->customFieldName;
+        $data['tooltip'] = $this->tooltip[ $this->language ];
+        $data['helpHtml'] = $this->helpHtml[ $this->language ];
 
         $themeName = $this->theme. 'Theme' ; var_dump( $themeName );
         include_once( dirname( __FILE__ ).'/themes/'.$themeName.'.php' );
         if( class_exists( $themeName ) ){
-            var_dump( $themeName );
             $themeObj = new $themeName( $this->themeOptions );
         }else{
             $themeObj = new DefaultTheme( $this->themeOptions );
-            var_dump( $themeName );
         }
         return $themeObj->render( $data );
     }
