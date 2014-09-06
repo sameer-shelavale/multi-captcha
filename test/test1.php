@@ -49,8 +49,9 @@ $captcha = new \MultiCaptcha\Captcha(
         'gif' => array(
             'maxCodeLength' => 8,
             'font'=>'../types/image/comic.ttf',
-            'width'=>175,
-            'totalFrames'=>48,
+            'width'=>180,
+            'height'=>60,
+            'totalFrames'=>50,
             'delay'=>20
         )
     )
