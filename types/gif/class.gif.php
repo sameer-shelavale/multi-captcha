@@ -22,8 +22,7 @@ class GifCaptcha extends BaseCaptcha {
     var $height     = 40;   // height of the image in pixels
 
     var $font = 'comic.ttf';
-    var $maxFontSize = 25;
-    var $minFontSize = 23;
+
 
     var $totalFrames = 40;
     var $delay = 5;
@@ -118,6 +117,10 @@ class GifCaptcha extends BaseCaptcha {
 
         $codeLength = strlen( $code );
         $animationData = array();
+
+        $maxFontSize = min( $this->width/($codeLength+2), $this->height/2.2 );
+        $minFontSize = $maxFontSize * 0.8;
+
         $bgColor = array(
             intval( rand(200,255) ),
             intval( rand(200,255) ),
@@ -131,7 +134,7 @@ class GifCaptcha extends BaseCaptcha {
             for( $i=0;  $i < $this->noiseLevel; $i++ ){
                 $char['type'] = 'noise';
                 $char = array();
-                $char['size'] = intval( rand( $this->minFontSize/2, $this->maxFontSize-2 ) );
+                $char['size'] = intval( rand( $minFontSize/2, $maxFontSize-2 ) );
                 $char['text'] = $this->generateCode( 1 );
                 $char['color'] = array(
                     intval( rand(130,224) ),
@@ -145,19 +148,21 @@ class GifCaptcha extends BaseCaptcha {
 
                 $char['speedX'] = rand( -25, 25 ) /10; // per frame
                 $char['speedY'] = rand( -20, 20 ) /10; // per frame
+                $char['speedR'] = rand( -40, 40 ) /10; // rotation speed per frame
+                $char['maxR'] = rand( 0, 360 ); // rotation angle
                 $animationData[] = $char;
             }
         }
 
         //add code
         // output the captcha code on top of everything
-        $textPositionY = $this->maxFontSize + ( $this->height - $this->maxFontSize )/2;
-        $textPositionX = $this->maxFontSize/2 - 2;
+        $textPositionY = $maxFontSize + ( $this->height - $maxFontSize )/2;
+        $textPositionX = $maxFontSize - 2;
         for( $i=0, $x=5; $i < $codeLength; $i++ ){
 
             $char = array();
             $char['type'] = 'code';
-            $char['size'] = intval( rand( $this->minFontSize, $this->maxFontSize ) );
+            $char['size'] = intval( rand( $minFontSize, $maxFontSize ) );
             $char['text'] = substr( $code, $i, 1 );
             $char['color'] = array(
                 intval( rand(0,128) ),
@@ -171,13 +176,15 @@ class GifCaptcha extends BaseCaptcha {
                 $char['color'][2] + intval( rand(0,128) )
             );
 
-            $char['angle'] = rand( -60, 60 );
+            $char['angle'] = rand( -50, 50 );
             $char['x'] = $textPositionX;
             $char['y'] = $textPositionY;
             $char['speedX'] = 0; // per frame
             $char['speedY'] = 0; // per frame
+            $char['speedR'] = rand( -40, 40 ) /10; // rotation speed per frame
+            $char['maxR'] = 50; // rotation speed per frame
 
-            $textPositionX += $this->maxFontSize + 2;
+            $textPositionX += $maxFontSize + 2;
             $animationData[] = $char;
         }
 
@@ -253,8 +260,24 @@ class GifCaptcha extends BaseCaptcha {
                 );
 
                 //move the charcters for next frame
-                $animationData[$idx]['x'] += $char['speedX'];
-                $animationData[$idx]['y'] += $char['speedY'];
+
+                    $animationData[$idx]['x'] += $char['speedX'];
+                    $animationData[$idx]['y'] += $char['speedY'];
+                    $animationData[$idx]['angle'] += $char['speedR'];
+
+                    //character bounce of the boundries
+                    if( $animationData[$idx]['x'] <= 0 || $animationData[$idx]['x'] >= $this->width ){
+                        $animationData[$idx]['speedX'] = 0 - $animationData[$idx]['speedX'];
+                    }
+                    if( $animationData[$idx]['y'] <= 0 || $animationData[$idx]['y'] >= $this->height){
+                        $animationData[$idx]['speedY'] = 0 - $animationData[$idx]['speedY'];
+                    }
+
+                    if( $animationData[$idx]['angle'] <= 0-$char['maxR'] || $animationData[$idx]['angle'] >= $char['maxR']){
+                        $animationData[$idx]['speedR'] = 0 - $animationData[$idx]['speedR'];
+                    }
+
+
 
             }
 
