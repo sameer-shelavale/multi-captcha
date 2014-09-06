@@ -32,7 +32,7 @@ $captcha = new \MultiCaptcha\Captcha(
             'font'=>'../types/image/comic.ttf',
             'width'=>175
         )
-    )*/
+    )
     array(
         'ascii' => array(
             'maxCodeLength' => 8,
@@ -42,6 +42,16 @@ $captcha = new \MultiCaptcha\Captcha(
                 'doom'=> 8,
                 'small'=>'8'
             )
+        )
+    )
+    */
+    array(
+        'gif' => array(
+            'maxCodeLength' => 8,
+            'font'=>'../types/image/comic.ttf',
+            'width'=>175,
+            'totalFrames'=>48,
+            'delay'=>20
         )
     )
 );
