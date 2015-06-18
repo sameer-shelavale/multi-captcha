@@ -5,27 +5,24 @@
  * Date: 6/3/14
  * Time: 5:43 PM
  */
-namespace MultiCaptcha;
 
-include_once( 'GIFEncoder.class.php' );
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
 
-class GifCaptcha extends BaseCaptcha {
+class Image extends BaseCaptcha {
 
     var $minCodeLength = 4; // minimum length of code displayed on captcha image
     var $maxCodeLength = 10; // maximum length of code displayed on captcha image( max value is 20 )
     var $maxRequired = 5;   // maximum number of characters that can be asked to identify
     var $minRequired = 3;   // minimum number of characters that can be asked to identify
 
-    var $noise      = true;
     var $noiseLevel = 25;   // number of background noisy characters
     var $width      = 150;  // width of image in pixels
     var $height     = 40;   // height of the image in pixels
 
     var $font = 'comic.ttf';
-
-
-    var $totalFrames = 40;
-    var $delay = 5;
+    var $maxFontSize = 15;
+    var $minFontSize = 13;
 
     private static $numberTypes = array(
         array( '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '17', '16', '18', '19', '20'),
@@ -96,7 +93,7 @@ class GifCaptcha extends BaseCaptcha {
         }
 
         $result['question']['type'] = 'image';
-        $result['question']['url'] = $this->getGifImage( $code );
+        $result['question']['url'] = $this->getImage( $code );
         $result['description'] = $questionText;
         $result['answer'] = $answer;
 
@@ -108,200 +105,9 @@ class GifCaptcha extends BaseCaptcha {
         $set = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $result = '';
         for( $i=0; $i < $length; $i++ ){
-            $result .= $set[ rand(0, strlen( $set )) ];
+            $result .= $set[ rand(0, strlen( $set )-1 ) ];
         }
         return $result;
-    }
-
-    function getGifImage( $code ){
-
-        $codeLength = strlen( $code );
-        $animationData = array();
-
-        $maxFontSize = min( $this->width/($codeLength+2), $this->height/2.2 );
-        $minFontSize = $maxFontSize * 0.8;
-
-        $bgColor = array(
-            intval( rand(200,255) ),
-            intval( rand(200,255) ),
-            intval( rand(200,255) )
-        );
-
-        //initialize noise and captcha code characters
-        //add character noise
-        if( $this->noise ){
-            // add random characters in background with random position, angle, color
-            for( $i=0;  $i < $this->noiseLevel; $i++ ){
-                $char['type'] = 'noise';
-                $char = array();
-                $char['size'] = intval( rand( $minFontSize/2, $maxFontSize-2 ) );
-                $char['text'] = $this->generateCode( 1 );
-                $char['color'] = array(
-                    intval( rand(130,224) ),
-                    intval( rand(130,224) ),
-                    intval( rand(130,224) )
-                );
-
-                $char['angle'] = intval( rand(0,360) );
-                $char['x'] = rand( 5, $this->width-5 ) ;
-                $char['y'] = rand( 5, $this->height-5 ) ;
-
-                $char['speedX'] = rand( -25, 25 ) /10; // per frame
-                $char['speedY'] = rand( -20, 20 ) /10; // per frame
-                $char['speedR'] = rand( -40, 40 ) /10; // rotation speed per frame
-                $char['maxR'] = rand( 0, 360 ); // rotation angle
-                $animationData[] = $char;
-            }
-        }
-
-        //add code
-        // output the captcha code on top of everything
-        $textPositionY = $maxFontSize + ( $this->height - $maxFontSize )/2;
-        $textPositionX = $maxFontSize - 2;
-        for( $i=0, $x=5; $i < $codeLength; $i++ ){
-
-            $char = array();
-            $char['type'] = 'code';
-            $char['size'] = intval( rand( $minFontSize, $maxFontSize ) );
-            $char['text'] = substr( $code, $i, 1 );
-            $char['color'] = array(
-                intval( rand(0,128) ),
-                intval( rand(0,128) ),
-                intval( rand(0,128) )
-            );
-
-            $char['shadowColor'] = array(
-                $char['color'][0] + intval( rand(0,128) ),
-                $char['color'][1] + intval( rand(0,128) ),
-                $char['color'][2] + intval( rand(0,128) )
-            );
-
-            $char['angle'] = rand( -50, 50 );
-            $char['x'] = $textPositionX;
-            $char['y'] = $textPositionY;
-            $char['speedX'] = 0; // per frame
-            $char['speedY'] = 0; // per frame
-            $char['speedR'] = rand( -40, 40 ) /10; // rotation speed per frame
-            $char['maxR'] = 50; // rotation speed per frame
-
-            $textPositionX += $maxFontSize + 2;
-            $animationData[] = $char;
-        }
-
-        //var_dump( $animationData );
-        //animate for given number of frames
-        $frames = array();
-        $framesDelay = array();
-        for( $i=0; $i < $this->totalFrames; $i++ ){
-
-            //create new image
-            $img = imagecreatetruecolor(
-                $this->width,
-                $this->height
-            );
-
-            //add image background
-            $bg = ImageColorAllocate(
-                $img,
-                $bgColor[0],
-                $bgColor[1],
-                $bgColor[2]
-            );
-
-            //create a rectangle with random background color
-            ImageFilledRectangle(
-                $img,
-                0,
-                0,
-                $this->width,
-                $this->height,
-                $bg
-            );
-
-            foreach( $animationData as $idx => $char ){
-
-                if( $char['type'] == 'code' ){
-                    //add shadow
-                    $color = imagecolorallocate(
-                        $img,
-                        $char['shadowColor'][0],
-                        $char['shadowColor'][1],
-                        $char['shadowColor'][2]
-                    );
-
-                    ImageTTFText(
-                        $img,
-                        $char['size'],
-                        $char['angle'],
-                        $char['x']+2,
-                        $char['y']+2,
-                        $color,
-                        $this->font,
-                        $char['text']
-                    );
-                }
-
-                $color = imagecolorallocate(
-                    $img,
-                    $char['color'][0],
-                    $char['color'][1],
-                    $char['color'][2]
-                );
-
-                ImageTTFText(
-                    $img,
-                    $char['size'],
-                    $char['angle'],
-                    intval($char['x']),
-                    intval($char['y']),
-                    $color,
-                    $this->font,
-                    $char['text']
-                );
-
-                //move the charcters for next frame
-
-                    $animationData[$idx]['x'] += $char['speedX'];
-                    $animationData[$idx]['y'] += $char['speedY'];
-                    $animationData[$idx]['angle'] += $char['speedR'];
-
-                    //character bounce of the boundries
-                    if( $animationData[$idx]['x'] <= 0 || $animationData[$idx]['x'] >= $this->width ){
-                        $animationData[$idx]['speedX'] = 0 - $animationData[$idx]['speedX'];
-                    }
-                    if( $animationData[$idx]['y'] <= 0 || $animationData[$idx]['y'] >= $this->height){
-                        $animationData[$idx]['speedY'] = 0 - $animationData[$idx]['speedY'];
-                    }
-
-                    if( $animationData[$idx]['angle'] <= 0-$char['maxR'] || $animationData[$idx]['angle'] >= $char['maxR']){
-                        $animationData[$idx]['speedR'] = 0 - $animationData[$idx]['speedR'];
-                    }
-
-
-
-            }
-
-            ob_start();
-            imagegif( $img );
-            $frames[] = ob_get_contents();
-            ob_end_clean();
-            $framesDelay[] = $this->delay;
-
-            //echo '<img src="data:image/gif;base64,' . base64_encode( $frames[count( $frames )-1] ).'" /><br/><br/>' ;
-            ImageDestroy( $img );
-        }
-
-        $gif = new GIFEncoder	(
-            $frames,
-            $framesDelay,   //delay
-            0,              //loops
-            2,              //Disposal
-            255, 255, 255,  //bg
-            "bin"           //binary data
-        );
-
-
-        return ('data:image/gif;base64,' . base64_encode( $gif->GetAnimation() ) );
     }
 
 
@@ -346,7 +152,7 @@ class GifCaptcha extends BaseCaptcha {
             // add random characters in background with random position, angle, color
             for( $i=0;  $i < $this->noiseLevel; $i++ ){
 
-                $size = intval( rand( $this->minFontSize/2, $this->maxFontSize-2 ) );
+                $size = intval( rand( $this->maxFontSize/2, $this->maxFontSize-2 ) );
                 $angle = intval( rand(0,360) );
                 $x = intval( rand( 10, $this->width-5 ) );
                 $y = intval( rand( 0, $this->height-5 ) );

@@ -5,9 +5,10 @@
  * Date: 5/14/14
  * Time: 5:39 PM
  */
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
 
-class MathCaptcha extends BaseCaptcha {
+class Math extends BaseCaptcha {
 
     var $description = "Answer following question if you are human";
     var $id = false;

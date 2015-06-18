@@ -5,8 +5,8 @@
  * Date: 5/14/14
  * Time: 5:39 PM
  */
-namespace MultiCaptcha;
-include_once( 'recaptchalib.php' );
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
 
 class HoneyPot extends BaseCaptcha {
 

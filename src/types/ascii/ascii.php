@@ -9,11 +9,11 @@
  * the PhpFiglet Class is property of Lucas Baltes
  *
  */
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
+use MultiCaptcha\Types\Ascii\PhpFiglet;
 
-include_once( "class.phpfiglet.php" );
-
-class AsciiCaptcha extends BaseCaptcha {
+class Ascii extends BaseCaptcha {
 
     var $minCodeLength = 4; // minimum length of code displayed on captcha image
     var $maxCodeLength = 10; // maximum length of code displayed on captcha image( max value is 20 )
@@ -109,14 +109,14 @@ class AsciiCaptcha extends BaseCaptcha {
         $set = 'abcdefghijkmnopqrstuvwxyz123456789'; //some capital letters and 'l','0' are removed to avoid confusion
         $result = '';
         for( $i=0; $i < $length; $i++ ){
-            $result .= $set[ rand(0, strlen( $set )) ];
+            $result .= $set[ rand(0, strlen( $set )-1) ];
         }
         return $result;
     }
 
 
     function getFiglet( $code ) {
-        $phpFiglet = new phpFiglet();
+        $phpFiglet = new PhpFiglet();
         $font =  array_rand( $this->fonts );
         if ($phpFiglet->loadFont(  $this->fontPath.$font.'.flf' ) ) {
             $result = $phpFiglet->fetch( $code );
