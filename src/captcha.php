@@ -7,7 +7,7 @@
  */
 namespace MultiCaptcha;
 
-require_once ( ltrim( __DIR__, '/'). '/base_captcha.php' );
+require_once ( ltrim( __DIR__, '/'). '/BaseCaptcha.php' );
 //Auto load the required php classes
 spl_autoload_register( function($className){
     $curDir = ltrim( __DIR__, '/');
