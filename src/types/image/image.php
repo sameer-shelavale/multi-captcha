@@ -6,9 +6,10 @@
  * Time: 5:43 PM
  */
 
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
 
-class ImageCaptcha extends BaseCaptcha {
+class Image extends BaseCaptcha {
 
     var $minCodeLength = 4; // minimum length of code displayed on captcha image
     var $maxCodeLength = 10; // maximum length of code displayed on captcha image( max value is 20 )
@@ -104,7 +105,7 @@ class ImageCaptcha extends BaseCaptcha {
         $set = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $result = '';
         for( $i=0; $i < $length; $i++ ){
-            $result .= $set[ rand(0, strlen( $set )) ];
+            $result .= $set[ rand(0, strlen( $set )-1 ) ];
         }
         return $result;
     }
