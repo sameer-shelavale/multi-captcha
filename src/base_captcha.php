@@ -30,15 +30,15 @@ class BaseCaptcha {
      * function getHtml()
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
-    public function getHtml(){
+    public function render(){
 
-        $data = $this->generateQuestion( $this->level );
+        $data = $this->generateQuestion();
 
         $data['cipher'] = $this->encrypt( $data['answer'], 'math' );
 
         $data['customFieldName'] = $this->customFieldName;
-        $data['tooltip'] = $this->tooltip[ $this->language ];
-        $data['helpHtml'] = $this->helpHtml[ $this->language ];
+        $data['tooltip'] = isset( $this->tooltip[ $this->language ] )? $this->tooltip[ $this->language ]: '';
+        $data['helpHtml'] = isset( $this->helpHtml[ $this->language ] )? $this->helpHtml[ $this->language ]: '';
 
         $themeName = $this->theme. 'Theme' ;
         include_once( dirname( __FILE__ ).'/themes/'.$themeName.'.php' );
@@ -114,8 +114,13 @@ class BaseCaptcha {
             return false;
         }
 
+        if( strlen( $cipherTextDec) < $ivSize ){
+            return false;
+        }
+
         # retrieves the IV, iv_size should be created using mcrypt_get_iv_size()
         $ivDec = substr( $cipherTextDec, 0, $ivSize );
+
 
         # retrieves the cipher text (everything except the $iv_size in the front)
         $cipherTextDec = substr( $cipherTextDec, $ivSize );
@@ -136,7 +141,7 @@ class BaseCaptcha {
 
 
     public function validate( $cipherText, $answer  ){
-        $plainText = self::decrypt( $cipherText, $this->secretKey );
+        $plainText = self::decrypt( $cipherText );
 
         if( !$plainText ){
             //cipherText is not base64 encoded so its invalid/corrupt
