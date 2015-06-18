@@ -12,3 +12,13 @@ This class currently supports following types of CAPTCHA
 5. Math - It asks simple mathematical question to user.
 6. Recaptcha - Google Recaptcha
 
+Screenshots:
+
+Captcha Type    |   Screenshot
+-------------   |   -------------
+image           |   ![Image Captcha Screenshot](/examples/image-captcha.gif)
+gif             |   ![Gif Captcha Screenshot](/examples/gif-captcha.gif)
+ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif)
+math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif)
+honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif)
+recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.gif)
