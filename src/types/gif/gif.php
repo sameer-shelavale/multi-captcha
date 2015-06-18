@@ -5,11 +5,12 @@
  * Date: 6/3/14
  * Time: 5:43 PM
  */
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
+use MultiCaptcha\Types\Gif\GifEncoder;
 
-include_once( 'GIFEncoder.class.php' );
 
-class GifCaptcha extends BaseCaptcha {
+class Gif extends BaseCaptcha {
 
     var $minCodeLength = 4; // minimum length of code displayed on captcha image
     var $maxCodeLength = 10; // maximum length of code displayed on captcha image( max value is 20 )
@@ -108,7 +109,7 @@ class GifCaptcha extends BaseCaptcha {
         $set = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $result = '';
         for( $i=0; $i < $length; $i++ ){
-            $result .= $set[ rand(0, strlen( $set )) ];
+            $result .= $set[ rand(0, strlen( $set )-1) ];
         }
         return $result;
     }
@@ -220,7 +221,7 @@ class GifCaptcha extends BaseCaptcha {
 
             foreach( $animationData as $idx => $char ){
 
-                if( $char['type'] == 'code' ){
+                if( isset( $char['type'] ) && $char['type'] == 'code' ){
                     //add shadow
                     $color = imagecolorallocate(
                         $img,
@@ -291,7 +292,7 @@ class GifCaptcha extends BaseCaptcha {
             ImageDestroy( $img );
         }
 
-        $gif = new GIFEncoder	(
+        $gif = new GifEncoder(
             $frames,
             $framesDelay,   //delay
             0,              //loops

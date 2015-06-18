@@ -24,9 +24,9 @@
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 */
 
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types\Gif;
 
-Class GIFEncoder {
+Class GifEncoder {
 	var $GIF = "GIF89a";		/* GIF header 6 bytes	*/
 	var $VER = "GIFEncoder V2.05";	/* Encoder version		*/
 
@@ -37,10 +37,10 @@ Class GIFEncoder {
 	var $IMG = -1;
 
 	var $ERR = Array (
-		ERR00=>"Does not supported function for only one image!",
-		ERR01=>"Source is not a GIF image!",
-		ERR02=>"Unintelligible flag ",
-		ERR03=>"Does not make animation from animated GIF source",
+		'ERR00'=>"Does not supported function for only one image!",
+		'ERR01'=>"Source is not a GIF image!",
+		'ERR02'=>"Unintelligible flag ",
+		'ERR03'=>"Does not make animation from animated GIF source",
 	);
 
 	/*
@@ -92,11 +92,11 @@ Class GIFEncoder {
 			}
 		}
 
-		GIFEncoder::GIFAddHeader ( );
+        GifEncoder::GIFAddHeader ( );
 		for ( $i = 0; $i < count ( $this->BUF ); $i++ ) {
-			GIFEncoder::GIFAddFrames ( $i, $GIF_dly [ $i ] );
+            GifEncoder::GIFAddFrames ( $i, $GIF_dly [ $i ] );
 		}
-		GIFEncoder::GIFAddFooter ( );
+        GifEncoder::GIFAddFooter ( );
 	}
 	/*
 	:::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -112,7 +112,7 @@ Class GIFEncoder {
 
 			$this->GIF .= substr ( $this->BUF [ 0 ], 6, 7		);
 			$this->GIF .= substr ( $this->BUF [ 0 ], 13, $cmap	);
-			$this->GIF .= "!\377\13NETSCAPE2.0\3\1" . GIFEncoder::GIFWord ( $this->LOP ) . "\0";
+			$this->GIF .= "!\377\13NETSCAPE2.0\3\1" . GifEncoder::GIFWord ( $this->LOP ) . "\0";
 		}
 	}
 	/*
@@ -164,7 +164,7 @@ Class GIFEncoder {
 		}
 		if ( ord ( $this->BUF [ $i ] { 10 } ) & 0x80 && $this->IMG > -1 ) {
 			if ( $Global_len == $Locals_len ) {
-				if ( GIFEncoder::GIFBlockCompare ( $Global_rgb, $Locals_rgb, $Global_len ) ) {
+				if ( GifEncoder::GIFBlockCompare ( $Global_rgb, $Locals_rgb, $Global_len ) ) {
 					$this->GIF .= ( $Locals_ext . $Locals_img . $Locals_tmp );
 				}
 				else {
