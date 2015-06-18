@@ -5,13 +5,16 @@
  * Date: 5/14/14
  * Time: 5:39 PM
  */
-include_once( 'recaptchalib.php' );
+namespace MultiCaptcha\Types;
+use MultiCaptcha\BaseCaptcha;
+
+include_once('recaptchalib.php');
 
 class Recaptcha extends BaseCaptcha {
     var $publicKey = false;
     var $privateKey = false;
 
-    public function getHtml(){
+    public function render(){
         return recaptcha_get_html( $this->publicKey );
     }
 
