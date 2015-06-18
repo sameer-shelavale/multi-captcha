@@ -7,8 +7,8 @@ $captcha = new \MultiCaptcha\Captcha([
     'secret'=>    "form1-secret-key",
     'options' =>  [
         'recaptcha' => [
-            'publicKey'=> "6Le1XPQSAAAAAPteoelqqH7JQzKGOikcTc3HrpAA",
-            'privateKey' => "6Le1XPQSAAAAABu9LOXfj6Wxvec_cQFXCHjOJzG3"
+            'publicKey'=> "6Le1XPQSAAAAAPteoelqqH7JQzKGOikcTc3HrpAA", // replace this with your public key
+            'privateKey' => "6Le1XPQSAAAAABu9LOXfj6Wxvec_cQFXCHjOJzG3" // replace this with your private key
         ]
     ]
 ] );

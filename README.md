@@ -3,7 +3,7 @@ multi-captcha
 
 Different types of CAPTCHA in one package. Sometimes we just need to avoid spambots and want to keep the forms user-friendly and sometimes we need complete protection even if becomes a bit complex for users.
 
-This class currently supports following types of CAPTCHA
+This package currently supports following types of CAPTCHA
 
 1. Gif - Gif animated captcha. Very hard on bots.
 2. Image Code - User has to type some or all part of code displayed in the image.
