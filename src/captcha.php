@@ -7,7 +7,21 @@
  */
 namespace MultiCaptcha;
 
-include_once( dirname(__FILE__).'/class.BaseCaptcha.php' );
+require_once ( ltrim( __DIR__, '/'). '/base_captcha.php' );
+//Auto load the required php classes
+spl_autoload_register( function($className){
+    $curDir = ltrim( __DIR__, '/');
+    //$cls = array_pop( explode('\\', $className) );
+
+    if( preg_match( '/MultiCaptcha\\\Types\\\(.+)\\\(.+)$/i', $className, $matches ) ){
+        $cls = ltrim( strtolower( preg_replace( '/([A-Z])/', '_$1',$matches[2])), '_');
+        $dir = ltrim( strtolower( preg_replace( '/([A-Z])/', '_$1',$matches[1])), '_');
+        require_once( $curDir.'/types/'. $dir.'/'. $cls.'.php');
+    }elseif( preg_match( '/MultiCaptcha\\\Types\\\(.+)$/i', $className, $matches ) ){
+        $cls = ltrim( strtolower( preg_replace( '/([A-Z])/', '_$1',$matches[1])), '_');
+        require_once( $curDir.'/types/'. $cls.'/'. $cls.'.php');
+    }
+});
 
 class Captcha extends BaseCaptcha {
 
@@ -24,13 +38,13 @@ class Captcha extends BaseCaptcha {
 
     var $supportedTypes = array(
         'recaptcha' => 'Recaptcha',     //captcha by google
-        'image'     => 'ImageCaptcha',  //user has to type code displayed in captcha image
+        'image'     => 'Image',  //user has to type code displayed in captcha image
         'honeypot'  => 'HoneyPot',      //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
         'checkbox'  => 'Checkbox',      //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
-        'math'      => 'MathCaptcha',   //Math captcha which asks answer of simple mathematical questions
-        'ascii'     => 'AsciiCaptcha',  //ASCII captcha, displays the captcha in ASCII decorative style
-        'gif'       => 'GifCaptcha',    //GIF animated captcha
-        'video'     => 'VideoCaptcha'   //Video Captcha
+        'math'      => 'Math',   //Math captcha which asks answer of simple mathematical questions
+        'ascii'     => 'Ascii',  //ASCII captcha, displays the captcha in ASCII decorative style
+        'gif'       => 'Gif',    //GIF animated captcha
+        'video'     => 'Video'   //Video Captcha
     );
 
     var $enabledTypeOptions = array();    //multiple types can also be specified,
@@ -41,12 +55,34 @@ class Captcha extends BaseCaptcha {
     /*
      * constructor
      */
-    function __construct( $secretKey, $typeOptions= array(), $life = 10, $customFieldName= null){
-        $this->secretKey = $secretKey;
-        $this->life = $life;
-        $this->customFieldName = $customFieldName;
+    function __construct( $params ){
+        if( isset( $params['secret'] ) ){
+            $this->secretKey = $params['secret'];
+        }
 
-        $this->setOptions( $typeOptions );
+        if( isset( $params['life'] )&& is_numeric( $params['life'] ) ){
+            $this->life = $params['life'];
+        }else{
+            $this->life = 10;
+        }
+
+        if( isset( $params['custom_name'] ) ){
+            $this->customFieldName = $params['custom_name'];
+        }
+
+        if( isset( $params['options'] ) ){
+            $this->setOptions( $params['options'] );
+        }else{
+            $this->setOptions( [
+                'image' => [
+                    'maxCodeLength' => 8,
+                    'font'=>'../src/types/image/comic.ttf',
+                    'width'=>175
+                ]
+            ] );
+        }
+
+
     }
 
 
@@ -68,7 +104,7 @@ class Captcha extends BaseCaptcha {
      */
     function setOptions( $typeOptions = array()){
         foreach( $typeOptions as $type => $options ){
-            if( is_array( $this->enabledTypeOptions[$type] ) ){
+            if( isset( $this->enabledTypeOptions[$type]) && is_array( $this->enabledTypeOptions[$type] ) ){
                 $this->enabledTypeOptions[$type] = array_merge( $this->enabledTypeOptions[ $type ], $options );
             }else{
                 $this->enabledTypeOptions[$type] = $options ;
@@ -82,9 +118,7 @@ class Captcha extends BaseCaptcha {
 
     public function getObject( $type ){
         if( !isset( $this->objects[$type] ) ){
-            include_once( dirname(__FILE__).'/types/'.$type.'/class.'.$type.'.php' );
-
-            $name = 'MultiCaptcha\\'.$this->supportedTypes[$type]; //Investigate Why is it not working without namespace prefix? we are in same namespace
+            $name = 'MultiCaptcha\\Types\\'.$this->supportedTypes[$type]; //Investigate Why is it not working without namespace prefix? we are in same namespace
             $this->objects[$type] = new $name(
                 $this->secretKey,
                 $this->life,
@@ -100,7 +134,7 @@ class Captcha extends BaseCaptcha {
      * function getHtml()
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
-    public function getHtml( $type = null ){
+    public function render( $type = null ){
 
         if( count( $this->enabledTypeOptions ) == 0 ){
             return false;
@@ -116,7 +150,7 @@ class Captcha extends BaseCaptcha {
 
         $obj = $this->getObject( $type );
 
-        return $obj->getHtml();
+        return $obj->render();
     }
 
 
