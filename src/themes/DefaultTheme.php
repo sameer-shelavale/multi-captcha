@@ -93,10 +93,22 @@ class DefaultTheme {
                     line-height:100%;">'.$data['description'].'</div>';
 
         if( isset( $data['helpUrl'] ) || isset( $data['helpHtml'] ) || isset( $data['refreshUrl'] ) ){
+            $help = '';
+            if( isset( $data['helpUrl'] ) ){
+                $help = '<a href="'.$data['helpUrl'].'" title="Help">Help</a>';
+            }elseif( isset( $data['helpHtml'] ) ){
+                /*
+                 * TODO: implement support for helpHTML
+                 */
+                //$help = '<a href="'.$data['helpUrl'].'" title="Help">Help</a>';
+            }
+            $refresh = '';
+            if( isset( $data['refreshUrl'] ) ){
+                $help = '<a href="'.$data['refreshUrl'].'" title="Refresh">Refresh</a>';
+            }
             $html .= '
                 <div>
-                    <a href="" title="Help">test1</a>
-                    <a href="" title="Refresh">test2</a>
+                    '.$help.$refresh.'
                 </div>';
         }
 
