@@ -34,10 +34,10 @@
  *					}
  *
  */
-namespace MultiCaptcha;
+namespace MultiCaptcha\Types\Ascii;
 
 
-class phpFiglet
+class PhpFiglet
 {
 
 	/*
@@ -85,9 +85,15 @@ class phpFiglet
         $this->maxLenght = $hp[3];
         $this->oldLayout = $hp[4];
         $this->commentLines = $hp[5] + 1;
-        $this->printDirection = $hp[6];
-        $this->fullLayout = $hp[7];
-        $this->codeTagCount = $hp[8];
+        if( isset( $hp[6] ) ){
+            $this->printDirection = $hp[6];
+        }
+        if( isset( $hp[7] ) ){
+            $this->fullLayout = $hp[7];
+        }
+        if( isset( $hp[8] ) ){
+            $this->codeTagCount = $hp[8];
+        }
 
         unset($hp);
 
