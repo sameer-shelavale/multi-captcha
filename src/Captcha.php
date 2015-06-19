@@ -26,7 +26,7 @@ spl_autoload_register( function($className){
 class Captcha extends BaseCaptcha {
 
     var $secretKey = "{{((o=All-Hands-More-Sail=o))}}"; //you MUST change this in live environment
-    var $life = 10;     //validity period of captcha in HOURS
+    var $life = 1;     //validity period of captcha in HOURS
     //it will be invalid after this time
     //basically we will remove all logs of successful captchas older than this amount of time.
     //this will reduce load on database
