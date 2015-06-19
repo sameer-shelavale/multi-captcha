@@ -66,8 +66,8 @@ class Captcha extends BaseCaptcha {
             $this->life = 10;
         }
 
-        if( isset( $params['custom_name'] ) ){
-            $this->customFieldName = $params['custom_name'];
+        if( isset( $params['customFieldName'] ) ){
+            $this->customFieldName = $params['customFieldName'];
         }
 
         if( isset( $params['options'] ) ){
@@ -155,11 +155,11 @@ class Captcha extends BaseCaptcha {
 
 
     /*
-     * function validateForm()
+     * function validate()
      * @param $data posted data or array containing the customField value and challangeFieldValue
      *              for example if $customFieldName is "my_captcha_field"
      *              then you can pass array( 'my_captcha_field'=>$_POST['my_captcha_field'], 'my_captcha_field_response'=>$_POST['my_captcha_field_challange'] )
-     * @param $remoteAddress remote IP address
+     * @param -$remoteAddress remote IP address (Optional)
      * @return boolean
      */
     public function validate( $data = array(), $remoteAddress = null ){
@@ -171,6 +171,7 @@ class Captcha extends BaseCaptcha {
 
             $obj = $this->getObject( 'recaptcha' );
 
+            //call verify function in Recaptcha class, (it has different implementation)
             return $obj->verify( $data, $remoteAddress );
         }
 
@@ -184,8 +185,13 @@ class Captcha extends BaseCaptcha {
                     return true;
                 }
             }
+        }else{
+            if( isset( $data[$fieldName], $data[$fieldName.'_challenge'] ) ){
+                if( $this->verify( $data[$fieldName.'_challenge'], $data[$fieldName] ) ){
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 
