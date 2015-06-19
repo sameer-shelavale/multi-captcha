@@ -13,6 +13,7 @@ This package currently supports following types of CAPTCHA
 6. Recaptcha - Google Recaptcha
 
 Screenshots:
+------------
 
 Captcha Type    |   Screenshot
 -------------   |   -------------
@@ -22,3 +23,33 @@ ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif)
 math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif)
 honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif)
 recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.gif)
+
+Installation:
+-------------
+You can install MultiCaptcha using Composer by doing
+
+```
+composer require sameer-shelavale/multi-captcha
+```
+
+Alternatively, you can add it directly in your composer.json file in require block
+
+```
+{
+    "require": {
+        "sameer-shelavale/multi-captcha": "1.0.*"
+    }
+}
+```
+
+Or you can download the zip/rar archive and extract it and copy the /src folder to appropriate location in your project folder.
+And then include the captcha.php
+
+```
+include_once( 'PATH-TO-MULTI-CAPTCHA-FOLDER/src/Captcha.php' );
+```
+
+Please note that, for libraries/framework that have psr-0 or psr-4 compatible class auto-loader like Laravel etc. you don't need the above include statement as well.
+
+Usage:
+-------
