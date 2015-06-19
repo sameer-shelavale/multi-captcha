@@ -11,7 +11,7 @@ gif             |   ![Gif Captcha Screenshot](/examples/gif-captcha.gif) | Asks 
 ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif) | Asks user to identify all or some characters from the animated image. | Moderate | Average
 math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif) | Asks user to solve simple mathematical expression. | Below Average | Easy
 honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif) | Asks user to leave the captcha field blank. | Low | Very Easy
-recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.gif) | Asks user to identify all characters displayed in the jpg image. | High | Average
+recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.jpg) *(image is resized)* | Asks user to identify all characters displayed in the jpg image. | High | Average
 
 ## Installation:
 
@@ -96,40 +96,40 @@ Now lets look in details at the supported configuration parameters for each of t
 ##### Image Captcha
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| minCodeLength       |     4       | Optional | Maximum length of code to be displayed in the image |
-| maxCodeLength       |     8       | Optional | Maximum length of code to be displayed in the image |
-| maxRequired         |     5       | Optional | Maximum number of characters it can ask the user to identify |
-| minRequired         |     3       | Optional | Minimum number of characters it can ask the user to identify |
-| noiseLevel          |     25      | Number of background noisy characters to be added as noise |
-| width               |     150     | Width of the captcha image in pixels |
-| height              |     40      | Height of the captcha image in pixels |
-| font                | comic.ttf   | Path to the font file which will be used for creating the characters |
+| *minCodeLength*       |     4       | Optional | Maximum length of code to be displayed in the image |
+| *maxCodeLength*       |     8       | Optional | Maximum length of code to be displayed in the image |
+| *maxRequired*         |     5       | Optional | Maximum number of characters it can ask the user to identify |
+| *minRequired*         |     3       | Optional | Minimum number of characters it can ask the user to identify |
+| *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
+| *width*               |     150     | Optional | Width of the captcha image in pixels |
+| *height*              |     40      | Optional | Height of the captcha image in pixels |
+| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### Gif Captcha(GIF Animated captcha)
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| totalFrames         |     60      | Optional | Total number of frames to be produced. Please note having too many frames may overload server during heavy traffic |
-| delay               |     5       | Optional | delay between frames in Millisecond
-| minCodeLength       |     4       | Optional | Maximum length of code to be displayed in the image |
-| maxCodeLength       |     8       | Optional | Maximum length of code to be displayed in the image |
-| maxRequired         |     5       | Optional | Maximum number of characters it can ask the user to identify |
-| minRequired         |     3       | Optional | Minimum number of characters it can ask the user to identify |
-| noiseLevel          |     25      | Optional | Number of background noisy characters to be added as noise |
-| width               |     150     | Optional | Width of the captcha image in pixels |
-| height              |     40      | Optional | Height of the captcha image in pixels |
-| font                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
+| *totalFrames*         |     60      | Optional | Total number of frames to be produced. Please note having too many frames may overload server during heavy traffic |
+| *delay*               |     5       | Optional | delay between frames in Millisecond
+| *minCodeLength*       |     4       | Optional | Maximum length of code to be displayed in the image |
+| *maxCodeLength*       |     8       | Optional | Maximum length of code to be displayed in the image |
+| *maxRequired*         |     5       | Optional | Maximum number of characters it can ask the user to identify |
+| *minRequired*         |     3       | Optional | Minimum number of characters it can ask the user to identify |
+| *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
+| *width*               |     150     | Optional | Width of the captcha image in pixels |
+| *height*              |     40      | Optional | Height of the captcha image in pixels |
+| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### ASCII Captcha
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| fonts               | comic.ttf   | Optional | array containing font name(without extension) as key and the size to be rendered in pixels as value. The figlet fonts vary in size when rendered so in order to control the height and width of the captcha we need to pass the font-size. For large fonts you can pass smaller value of font size. |
-| fontPath            |     null    | Optional | If you want your own Figlet fonts you can specify path to the folder containing them here. |
-| minCodeLength       |     4       | Optional | Maximum length of code to be displayed in the image |
-| maxCodeLength       |     8       | Optional | Maximum length of code to be displayed in the image |
-| maxRequired         |     5       | Optional | Maximum number of characters it can ask the user to identify |
-| minRequired         |     3       | Optional | Minimum number of characters it can ask the user to identify |
+| *fonts*               | comic.ttf   | Optional | array containing font name(without extension) as key and the size to be rendered in pixels as value. The figlet fonts vary in size when rendered so in order to control the height and width of the captcha we need to pass the font-size. For large fonts you can pass smaller value of font size. |
+| *fontPath*            |     null    | Optional | If you want your own Figlet fonts you can specify path to the folder containing them here. |
+| *minCodeLength*       |     4       | Optional | Maximum length of code to be displayed in the image |
+| *maxCodeLength*       |     8       | Optional | Maximum length of code to be displayed in the image |
+| *maxRequired*         |     5       | Optional | Maximum number of characters it can ask the user to identify |
+| *minRequired*         |     3       | Optional | Minimum number of characters it can ask the user to identify |
 
 ASCII font names:
 You can find the currently supported ASCII figlet fonts in src/types/ascii/fonts/ folder and use the name of the font without the .flf extension.
@@ -156,24 +156,29 @@ Note, the fonts parameter, it has the font name without extension as key. and th
 Unless you provide a *fontPath* parameter, it will look in src/types/ascii/fonts/ folder for that font.
 
 
+
 ##### Math Captcha(Simple Mathematical expression)
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| level               |     4   | Optional | Number of variables(digits) in the mathematical expression |
-| description         |   null  | Required | Some text asking the user to solve the mathematical expression. |
+| *level*               |     4   | Optional | Number of variables(digits) in the mathematical expression |
+| *description*         |   null  | Required | Some text asking the user to solve the mathematical expression. |
+
+
 
 
 ##### Honeypot Captcha
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| description         |   null  | Required | Some text asking the user to leave the captcha field blank(bots will try to fill it up and get caught) |
+| *description*         |   null  | Required | Some text asking the user to leave the captcha field blank(bots will try to fill it up and get caught) |
+
+
 
 
 ##### Recaptcha
 | Configuration Param | Default Value | Required | Decription |
 | ------------------- | ------------- | -------- | ---------- |
-| publicKey           |   null  | Required | You Recaptcha Public key given to you by Google |
-| privateKey          |   null  | Required | You Recaptcha Public key given to you by Google |
+| *publicKey*           |   null  | Required | You Recaptcha Public key given to you by Google |
+| *privateKey*          |   null  | Required | You Recaptcha Public key given to you by Google |
 
 Note: You can register and get your recaptcha keys at
 http://www.google.com/recaptcha
