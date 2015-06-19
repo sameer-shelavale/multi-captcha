@@ -155,7 +155,7 @@ class PhpFiglet
 		{
 			while (list($k, $v) = each($data))
 			{
-				$ret .= str_replace("\n", "", $v[$i]);
+				$ret .= preg_replace("/(\n|\r)+/", "", $v[$i]);
 			}
 			reset($data);
 			$ret .= "\n";

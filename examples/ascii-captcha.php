@@ -8,11 +8,10 @@ $captcha = new \MultiCaptcha\Captcha([
     'options' =>  [
         'ascii' => [
             'maxCodeLength' => 8,
-            'fontPath'=>'../src/types/ascii/fonts/',
             'fonts'=>array(
-                'banner'=> 4,
-                'doom'=> 8,
-                'small'=>'8'
+                'banner' => 4, //render with font size 4px or it becomes too big
+                'doom' => 8, //render with font size 8px
+                'small' =>'8' //render with font size 8px, "small" font is at src/types/ascii/fonts/small.flf
             )
         ]
     ]

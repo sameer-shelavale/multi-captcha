@@ -22,7 +22,6 @@ $captcha = new \MultiCaptcha\Captcha([
         ),
         'ascii' => array(
             'maxCodeLength' => 8,
-            'fontPath'=>'../src/types/ascii/fonts/',
             'fonts'=>array(
                 'banner'=> 4,
                 'doom'=> 8,
