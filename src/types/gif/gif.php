@@ -25,7 +25,7 @@ class Gif extends BaseCaptcha {
     var $font = 'comic.ttf';
 
 
-    var $totalFrames = 40;
+    var $totalFrames = 60;
     var $delay = 5;
 
     private static $numberTypes = array(
@@ -135,12 +135,12 @@ class Gif extends BaseCaptcha {
             for( $i=0;  $i < $this->noiseLevel; $i++ ){
                 $char['type'] = 'noise';
                 $char = array();
-                $char['size'] = intval( rand( $minFontSize/2, $maxFontSize-2 ) );
+                $char['size'] = intval( rand( $minFontSize/3, $maxFontSize-2 ) );
                 $char['text'] = $this->generateCode( 1 );
                 $char['color'] = array(
-                    intval( rand(130,224) ),
-                    intval( rand(130,224) ),
-                    intval( rand(130,224) )
+                    intval( rand(140,224) ),
+                    intval( rand(140,224) ),
+                    intval( rand(140,224) )
                 );
 
                 $char['angle'] = intval( rand(0,360) );
@@ -182,7 +182,7 @@ class Gif extends BaseCaptcha {
             $char['y'] = $textPositionY;
             $char['speedX'] = 0; // per frame
             $char['speedY'] = 0; // per frame
-            $char['speedR'] = rand( -40, 40 ) /10; // rotation speed per frame
+            $char['speedR'] = rand( -40, 40 ) /15; // rotation speed per frame
             $char['maxR'] = 50; // rotation speed per frame
 
             $textPositionX += $maxFontSize + 2;
@@ -193,7 +193,7 @@ class Gif extends BaseCaptcha {
         //animate for given number of frames
         $frames = array();
         $framesDelay = array();
-        for( $i=0; $i < $this->totalFrames; $i++ ){
+        for( $i=0; $i < ceil($this->totalFrames/2); $i++ ){
 
             //create new image
             $img = imagecreatetruecolor(
@@ -234,7 +234,7 @@ class Gif extends BaseCaptcha {
                         $img,
                         $char['size'],
                         $char['angle'],
-                        $char['x']+2,
+                        $char['x']+1,
                         $char['y']+2,
                         $color,
                         $this->font,
@@ -290,6 +290,10 @@ class Gif extends BaseCaptcha {
 
             //echo '<img src="data:image/gif;base64,' . base64_encode( $frames[count( $frames )-1] ).'" /><br/><br/>' ;
             ImageDestroy( $img );
+        }
+        for( $f = count( $frames)-1; $f >= 0; $f-- ){
+            $frames[] = $frames[$f];
+            $framesDelay[] = $this->delay;
         }
 
         $gif = new GifEncoder(

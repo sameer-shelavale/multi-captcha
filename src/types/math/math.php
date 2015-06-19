@@ -24,13 +24,13 @@ class Math extends BaseCaptcha {
     );
 
 
-    function generateQuestion( $level = 3 ){
+    function generateQuestion( ){
         $symbols1 = array( '+', '-', 'X', '/' );
         $symbols2 = array( '+', '-', 'X' );
 
         $q = array();
         $q[] = rand(0,10);
-        for( $i=1; $i < $level; $i++ ){
+        for( $i=1; $i < $this->level; $i++ ){
             //select operator
 
             if( $i == 1 && $q[0] != 0 ){

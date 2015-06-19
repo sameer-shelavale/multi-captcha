@@ -20,7 +20,7 @@ class Ascii extends BaseCaptcha {
     var $maxRequired = 5;   // maximum number of characters that can be asked to identify
     var $minRequired = 3;   // minimum number of characters that can be asked to identify
 
-    var $fontPath = 'types/ascii/fonts/';
+    var $fontPath;
     var $fonts = array(
         'standard' => 10,   //fontname as key and fontsize as value
     );
@@ -118,7 +118,12 @@ class Ascii extends BaseCaptcha {
     function getFiglet( $code ) {
         $phpFiglet = new PhpFiglet();
         $font =  array_rand( $this->fonts );
-        if ($phpFiglet->loadFont(  $this->fontPath.$font.'.flf' ) ) {
+        if( $this->fontPath && is_dir( $this->fontPath )){
+            $path = rtrim( $this->fontPath ).'/';
+        }else{
+            $path = rtrim( __DIR__,'/').'/fonts/';
+        }
+        if ($phpFiglet->loadFont(  $path.$font.'.flf' ) ) {
             $result = $phpFiglet->fetch( $code );
         } else {
             return false;

@@ -26,7 +26,7 @@ spl_autoload_register( function($className){
 class Captcha extends BaseCaptcha {
 
     var $secretKey = "{{((o=All-Hands-More-Sail=o))}}"; //you MUST change this in live environment
-    var $life = 10;     //validity period of captcha in HOURS
+    var $life = 1;     //validity period of captcha in HOURS
     //it will be invalid after this time
     //basically we will remove all logs of successful captchas older than this amount of time.
     //this will reduce load on database
@@ -66,8 +66,8 @@ class Captcha extends BaseCaptcha {
             $this->life = 10;
         }
 
-        if( isset( $params['custom_name'] ) ){
-            $this->customFieldName = $params['custom_name'];
+        if( isset( $params['customFieldName'] ) ){
+            $this->customFieldName = $params['customFieldName'];
         }
 
         if( isset( $params['options'] ) ){
@@ -155,14 +155,14 @@ class Captcha extends BaseCaptcha {
 
 
     /*
-     * function validateForm()
+     * function validate()
      * @param $data posted data or array containing the customField value and challangeFieldValue
      *              for example if $customFieldName is "my_captcha_field"
      *              then you can pass array( 'my_captcha_field'=>$_POST['my_captcha_field'], 'my_captcha_field_response'=>$_POST['my_captcha_field_challange'] )
-     * @param $remoteAddress remote IP address
+     * @param -$remoteAddress remote IP address (Optional)
      * @return boolean
      */
-    public function validateForm( $data = array(), $remoteAddress = null ){
+    public function validate( $data = array(), $remoteAddress = null ){
         $fieldName = $this->customFieldName;
 
         if( isset( $this->enabledTypeOptions['recaptcha'] )
@@ -171,7 +171,8 @@ class Captcha extends BaseCaptcha {
 
             $obj = $this->getObject( 'recaptcha' );
 
-            return $obj->validate( $data, $remoteAddress );
+            //call verify function in Recaptcha class, (it has different implementation)
+            return $obj->verify( $data, $remoteAddress );
         }
 
         //if customFieldName is disabled, we are using random field names
@@ -179,13 +180,18 @@ class Captcha extends BaseCaptcha {
         if( !$fieldName ){
             foreach( $data as $key => $value ){
                 //check if the key matches our particular challange format after decryption
-                if( $this->validate( $key, $value ) ){
+                if( $this->verify( $key, $value ) ){
                     //this is captcha field
                     return true;
                 }
             }
+        }else{
+            if( isset( $data[$fieldName], $data[$fieldName.'_challenge'] ) ){
+                if( $this->verify( $data[$fieldName.'_challenge'], $data[$fieldName] ) ){
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 

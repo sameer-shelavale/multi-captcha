@@ -22,7 +22,6 @@ $captcha = new \MultiCaptcha\Captcha([
         ),
         'ascii' => array(
             'maxCodeLength' => 8,
-            'fontPath'=>'../src/types/ascii/fonts/',
             'fonts'=>array(
                 'banner'=> 4,
                 'doom'=> 8,
@@ -41,7 +40,7 @@ $captcha = new \MultiCaptcha\Captcha([
 ] );
 
 if( isset( $_REQUEST['submit'] ) ){
-    var_dump( $captcha->validateForm( $_POST, $_SERVER['REMOTE_ADDR'] ) );
+    var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
 }
 ?>
 <h2>Display a random captcha from types initialized using "<i>options</i>" parameter.</h2>

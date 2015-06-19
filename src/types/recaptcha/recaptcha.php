@@ -19,7 +19,7 @@ class Recaptcha extends BaseCaptcha {
     }
 
 
-    public function validate( $postData, $remoteAddress ){
+    public function verify( $postData, $remoteAddress ){
         $resp = recaptcha_check_answer(
             $this->privateKey,
             $remoteAddress,

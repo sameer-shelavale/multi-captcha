@@ -14,7 +14,7 @@ class BaseCaptcha {
     var $helpHtml = array();
 
     var $secretKey = '';
-    var $life = 10;         //life/validity time of captcha in hours
+    var $life = 1;         //life/validity time of captcha in hours
     var $customFieldName = null;
     var $cipherIsFieldName = true;
     var $theme = 'Default';
@@ -140,7 +140,7 @@ class BaseCaptcha {
     }
 
 
-    public function validate( $cipherText, $answer  ){
+    public function verify( $cipherText, $answer  ){
         $plainText = self::decrypt( $cipherText );
 
         if( !$plainText ){
