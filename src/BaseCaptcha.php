@@ -140,7 +140,7 @@ class BaseCaptcha {
     }
 
 
-    public function validate( $cipherText, $answer  ){
+    public function verify( $cipherText, $answer  ){
         $plainText = self::decrypt( $cipherText );
 
         if( !$plainText ){

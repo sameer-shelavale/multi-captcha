@@ -8,13 +8,12 @@ $captcha = new \MultiCaptcha\Captcha([
     'options' =>  [
         'honeypot' => [
             'description'=> "Leave this field empty if you are human",
-            'class' => 'error'
         ]
     ]
 ] );
 
 if( isset( $_REQUEST['submit'] ) ){
-    var_dump( $captcha->validateForm( $_POST, $_SERVER['REMOTE_ADDR'] ) );
+    var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
 }
 ?>
 

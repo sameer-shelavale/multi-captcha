@@ -162,7 +162,7 @@ class Captcha extends BaseCaptcha {
      * @param $remoteAddress remote IP address
      * @return boolean
      */
-    public function validateForm( $data = array(), $remoteAddress = null ){
+    public function validate( $data = array(), $remoteAddress = null ){
         $fieldName = $this->customFieldName;
 
         if( isset( $this->enabledTypeOptions['recaptcha'] )
@@ -171,7 +171,7 @@ class Captcha extends BaseCaptcha {
 
             $obj = $this->getObject( 'recaptcha' );
 
-            return $obj->validate( $data, $remoteAddress );
+            return $obj->verify( $data, $remoteAddress );
         }
 
         //if customFieldName is disabled, we are using random field names
@@ -179,7 +179,7 @@ class Captcha extends BaseCaptcha {
         if( !$fieldName ){
             foreach( $data as $key => $value ){
                 //check if the key matches our particular challange format after decryption
-                if( $this->validate( $key, $value ) ){
+                if( $this->verify( $key, $value ) ){
                     //this is captcha field
                     return true;
                 }
