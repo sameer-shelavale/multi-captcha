@@ -8,22 +8,18 @@
 namespace MultiCaptcha;
 
 class DefaultTheme {
-    var $options = array();
+    var $fieldClass = '';
 
-    function DefaultTheme( $customValues ){
-
-        $this->options = array_merge( $this->options, $customValues );
-
+    function __construct( $customValues ){
+        foreach( $customValues as $key => $val ){
+            if( property_exists( get_class( $this ), $key ) ){
+                $this->$key = $val;
+            }
+        }
     }
 
 
     function render( $data ){
-        if( $data['customFieldName'] ){
-            $fieldName = $data['customFieldName'];
-        }else{
-            $fieldName = $data['cipher'];
-        }
-
         $html =
             '<div
                 style="border:3px solid #000;
@@ -72,7 +68,7 @@ class DefaultTheme {
         $html .= '<div>
                     <input
                         type="text"
-                        name="'.$fieldName.'"
+                        name="'.$data['fieldName'].'"
                         title="'.$data['tooltip'].'"
                         style="
                             background-color:#f66a03;
@@ -81,11 +77,10 @@ class DefaultTheme {
                             font-weight:bold;
                             border-radius:3px;
                         "
+                        class="'.$this->fieldClass.'"
                     />';
 
-        if( $data['cipher'] != $fieldName ){
-            $html .= '<input type="hidden" name="'.$fieldName.'_challenge" value="'.$data['cipher'] .'" /> ';
-        }
+        $html .= $data['hidden'];
         $html .= '</div>';
 
         $html .= '<div
@@ -95,16 +90,12 @@ class DefaultTheme {
         if( isset( $data['helpUrl'] ) || isset( $data['helpHtml'] ) || isset( $data['refreshUrl'] ) ){
             $help = '';
             if( isset( $data['helpUrl'] ) ){
-                $help = '<a href="'.$data['helpUrl'].'" title="Help">Help</a>';
-            }elseif( isset( $data['helpHtml'] ) ){
-                /*
-                 * TODO: implement support for helpHTML
-                 */
-                //$help = '<a href="'.$data['helpUrl'].'" title="Help">Help</a>';
+                $help = '<a href="'.$data['helpUrl'].'" target="_blank" title="Help">Help</a>';
             }
+
             $refresh = '';
             if( isset( $data['refreshUrl'] ) ){
-                $help = '<a href="'.$data['refreshUrl'].'" title="Refresh">Refresh</a>';
+                $refresh = '<a href="'.$data['refreshUrl'].'" title="Refresh" onclick="return multicaptcha_refresh();">Refresh</a>';
             }
             $html .= '
                 <div>
@@ -114,6 +105,15 @@ class DefaultTheme {
 
 
         $html .= '</div>';
+
+        $script = '
+        <script type="text/javascript">
+
+            function multicaptcha_refresh(){
+                return false;
+            }
+        </script>
+        ';
 
         return $html;
 
