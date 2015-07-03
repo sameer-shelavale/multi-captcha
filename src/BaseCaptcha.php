@@ -13,6 +13,7 @@ class BaseCaptcha {
     var $tooltip = array();
     var $helpHtml = array();
 
+
     var $secretKey = '';
     var $life = 1;         //life/validity time of captcha in hours
     var $customFieldName = null;
@@ -27,18 +28,45 @@ class BaseCaptcha {
     }
 
     /*
-     * function getHtml()
-     * @return html of the captcha code, this is to be inserted in the forms directly
+     * function data()
+     * @return  the details of the generated captcha as array
+     *          the array includes fields like cipher, question, customFieldName, tooltip etc.
+     *          This data in turn is used for rendering the captcha
      */
-    public function render(){
+    public function data(){
 
         $data = $this->generateQuestion();
 
         $data['cipher'] = $this->encrypt( $data['answer'], 'math' );
 
         $data['customFieldName'] = $this->customFieldName;
-        $data['tooltip'] = isset( $this->tooltip[ $this->language ] )? $this->tooltip[ $this->language ]: '';
+        if( is_array( $this->tooltip ) ){
+            $data['tooltip'] = isset( $this->tooltip[ $this->language ] )? $this->tooltip[ $this->language ]: '';
+        }elseif( is_string( $this->tooltip ) ){
+            $data['tooltip'] = $this->tooltip;
+        }
+
         $data['helpHtml'] = isset( $this->helpHtml[ $this->language ] )? $this->helpHtml[ $this->language ]: '';
+
+        if( $data['customFieldName'] ){
+            //custom fieldName is set
+            $data['fieldName'] = $data['customFieldName'];
+            $data['hidden'] = '<input type="hidden" name="'.$data['fieldName'].'_challenge" value="'.$data['cipher'] .'" /> ';
+        }else{
+            $data['fieldName'] = $data['cipher'];
+            $data['hidden'] = '';
+        }
+
+        return $data;
+    }
+
+    /*
+     * function render()
+     *      renders the captcha using the selected theme
+     * @returns the html for rendering the captcha
+     */
+
+    public function render(){
 
         $themeName = $this->theme. 'Theme' ;
         include_once( dirname( __FILE__ ).'/themes/'.$themeName.'.php' );
@@ -47,31 +75,7 @@ class BaseCaptcha {
         }else{
             $themeObj = new DefaultTheme( $this->themeOptions );
         }
-        return $themeObj->render( $data );
-    }
-
-
-    /*
-     * function validate()
-     * @param $data posted data or array containing the customField value and challangeFieldValue
-     *              for example if $customFieldName is "my_captcha_field"
-     *              then you can pass array( 'my_captcha_field'=>$_POST['my_captcha_field'], 'my_captcha_field_response'=>$_POST['my_captcha_field_challange'] )
-     * @param $remoteAddress remote IP address
-     * @return boolean
-     */
-    public function validateForm( $formData=array(), $remoteAddress = null ){
-
-        return false;
-    }
-
-
-    /*
-     * function getCaptchaField()
-     * @param $data posted data
-     * @return string field name for the captcha
-     */
-    public function getCaptchaField( $data ){
-
+        return $themeObj->render( $this->data() );
     }
 
 
