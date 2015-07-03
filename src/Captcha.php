@@ -37,20 +37,22 @@ class Captcha extends BaseCaptcha {
     //this extra field will be named $customFieldName."_challenge"
 
     var $supportedTypes = array(
-        'recaptcha' => 'Recaptcha',     //captcha by google
-        'image'     => 'Image',  //user has to type code displayed in captcha image
-        'honeypot'  => 'HoneyPot',      //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
-        'checkbox'  => 'Checkbox',      //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
-        'math'      => 'Math',   //Math captcha which asks answer of simple mathematical questions
-        'ascii'     => 'Ascii',  //ASCII captcha, displays the captcha in ASCII decorative style
-        'gif'       => 'Gif',    //GIF animated captcha
-        'video'     => 'Video'   //Video Captcha
+        'recaptcha' => 'Recaptcha', //captcha by google
+        'image'     => 'Image',     //user has to type code displayed in captcha image
+        'honeypot'  => 'HoneyPot',  //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
+        'checkbox'  => 'Checkbox',  //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
+        'math'      => 'Math',      //Math captcha which asks answer of simple mathematical questions
+        'ascii'     => 'Ascii',     //ASCII captcha, displays the captcha in ASCII decorative style
+        'gif'       => 'Gif',       //GIF animated captcha
+        'video'     => 'Video'      //Video Captcha
     );
 
     var $enabledTypeOptions = array();    //multiple types can also be specified,
     //in that case the captcha will be randomized from the selected types
 
     var $objects = array();
+
+
 
     /*
      * constructor
@@ -89,7 +91,7 @@ class Captcha extends BaseCaptcha {
     /* function setOptions()
      *      Sets options for various captcha types.
      *      It also updates the options in the captcha objects, if the objects are initialized
-     * @param $typeOptions Array of options with captchaType as keys
+     *      @param $typeOptions Array of options with captchaType as keys
      *      e.g. array(
      *              'recaptcha' => array(
      *                  'publicKey' => 'mypublickey',
@@ -152,6 +154,32 @@ class Captcha extends BaseCaptcha {
 
         return $obj->render();
     }
+
+    /*
+     * function data()
+     *      returns the rendering data for the given/random type of captcha
+     *      This function is intended to be used for customizing the captcha look
+     *      in third party libraries/softwares which may not want to use the themes
+     */
+    public function data( $type = null ){
+
+        if( count( $this->enabledTypeOptions ) == 0 ){
+            return false;
+        }
+
+        if( !$type ){
+            //no type specified, use random captcha from enabled types
+            $type = array_rand( $this->enabledTypeOptions );
+        }elseif( !isset( $this->enabledTypeOptions[ $type ] ) ){
+            //selected type of captcha does not exist or is not enabled
+            return false;
+        }
+
+        $obj = $this->getObject( $type );
+
+        return $obj->data();
+    }
+
 
 
     /*
