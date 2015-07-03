@@ -12,7 +12,6 @@ class Math extends BaseCaptcha {
 
     var $description = "Answer following question if you are human";
     var $id = false;
-    var $class = false;
     var $level = 3;
 
     var $tooltip = array(
