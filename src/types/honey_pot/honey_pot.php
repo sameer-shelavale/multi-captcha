@@ -22,7 +22,6 @@ class HoneyPot extends BaseCaptcha {
 
         $result['description'] = $this->description;
         $result['answer'] = $answer;
-        $result['cipher'] = $this->encrypt( $answer, 'honeypot' );
         return $result;
     }
 

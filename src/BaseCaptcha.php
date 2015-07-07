@@ -35,7 +35,7 @@ class BaseCaptcha {
     public function data(){
 
         $data = $this->generateQuestion();
-
+        
         $data['customFieldName'] = $this->customFieldName;
         if( is_array( $this->tooltip ) ){
             $data['tooltip'] = isset( $this->tooltip[ $this->language ] )? $this->tooltip[ $this->language ]: '';

@@ -40,14 +40,15 @@ class Captcha extends BaseCaptcha {
     //this extra field will be named $customFieldName."_challenge"
 
     var $supportedTypes = array(
-        'recaptcha' => 'Recaptcha', //captcha by google
+        'recaptcha' => 'Recaptcha', //captcha by Google
         'image'     => 'Image',     //user has to type code displayed in captcha image
         'honeypot'  => 'HoneyPot',  //honeypot, mainly for spambots, adds an hidden field which only the spambots fill in
         'checkbox'  => 'Checkbox',  //adds an checkbox which is supposed to be left blank by humans, but bots mark it checked
         'math'      => 'Math',      //Math captcha which asks answer of simple mathematical questions
         'ascii'     => 'Ascii',     //ASCII captcha, displays the captcha in ASCII decorative style
         'gif'       => 'Gif',       //GIF animated captcha
-        'video'     => 'Video'      //Video Captcha
+        'nocaptcha' => 'Nocaptcha',  //nocaptcha by Google
+        //'video'     => 'Video'      //Video Captcha(not implemented yet)
     );
 
     var $enabledTypeOptions = array();    //multiple types can also be specified,
@@ -163,6 +164,10 @@ class Captcha extends BaseCaptcha {
         //create question data for the selected type
         $data = $this->data( $type );
 
+        if( $type == 'recaptcha' || $type == 'nocaptcha' ){
+            return $data['html'];
+        }
+
         //create a theme object of specified theme name for the given captcha type
         $themeName = $data['theme'];
 
@@ -199,15 +204,18 @@ class Captcha extends BaseCaptcha {
         $obj = $this->getObject( $type );
         $data = $obj->data();
 
-        $data['cipher'] = $this->encrypt( $data['answer'], $type );
+        $data['type'] = $type;
+        if( $type != 'recaptcha' && $type != 'nocaptcha' ){
+            $data['cipher'] = $this->encrypt( $data['answer'], $type );
 
-        if( $data['customFieldName'] ){
-            //custom fieldName is set
-            $data['fieldName'] = $data['customFieldName'];
-            $data['hidden'] = '<input type="hidden" name="'.$data['fieldName'].'_challenge" value="'.$data['cipher'] .'" /> ';
-        }else{
-            $data['fieldName'] = $data['cipher'];
-            $data['hidden'] = '';
+            if( $data['customFieldName'] ){
+                //custom fieldName is set
+                $data['fieldName'] = $data['customFieldName'];
+                $data['hidden'] = '<input type="hidden" name="'.$data['fieldName'].'_challenge" value="'.$data['cipher'] .'" /> ';
+            }else{
+                $data['fieldName'] = $data['cipher'];
+                $data['hidden'] = '';
+            }
         }
 
         return $data;
@@ -231,6 +239,19 @@ class Captcha extends BaseCaptcha {
             && isset( $data['recaptcha_challenge_field'] ) ){
 
             $obj = $this->getObject( 'recaptcha' );
+
+            //call verify function in Recaptcha class, (it has different implementation)
+            if( $obj->verify( $data, $remoteAddress ) ){
+                $this->error = false;
+                return true;
+            }else{
+                $this->error = $obj->errorMsg;
+                return false;
+            }
+        }elseif( isset( $this->enabledTypeOptions['nocaptcha'] )
+            && isset( $data['g-recaptcha-response'] ) ){
+
+            $obj = $this->getObject( 'nocaptcha' );
 
             //call verify function in Recaptcha class, (it has different implementation)
             if( $obj->verify( $data, $remoteAddress ) ){
