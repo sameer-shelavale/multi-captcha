@@ -20,6 +20,9 @@ spl_autoload_register( function($className){
     }elseif( preg_match( '/MultiCaptcha\\\Types\\\(.+)$/i', $className, $matches ) ){
         $cls = ltrim( strtolower( preg_replace( '/([A-Z])/', '_$1',$matches[1])), '_');
         require_once( $curDir.'/types/'. $cls.'/'. $cls.'.php');
+    }elseif( preg_match( '/MultiCaptcha\\\Themes\\\(.+)$/i', $className, $matches ) ){
+        $cls = $matches[1];
+        require_once( $curDir.'/themes/'. $cls.'.php');
     }
 });
 
@@ -52,6 +55,12 @@ class Captcha extends BaseCaptcha {
 
     var $objects = array();
 
+    var $error = false;
+
+    var $msgInvalidCaptcha = "Invalid captcha challenge."; // if the captcha field is not found or the provided cipherText cant be decrypted
+    var $msgExpiredCaptcha = "Captcha challenge expired."; //if the question is expired i.e. user took too long to answer
+    var $msgAnsweredRecently = "The captcha challenge is already solved. Did you resubmit the form? "; //if the question is already asked quiet recently
+    var $msgFieldNotFound = "Captcha challenge field is not found."; // Captcha field is not found in the submitted data
 
 
     /*
@@ -138,6 +147,7 @@ class Captcha extends BaseCaptcha {
      */
     public function render( $type = null ){
 
+        //first select the type
         if( count( $this->enabledTypeOptions ) == 0 ){
             return false;
         }
@@ -150,9 +160,20 @@ class Captcha extends BaseCaptcha {
             return false;
         }
 
-        $obj = $this->getObject( $type );
+        //create question data for the selected type
+        $data = $this->data( $type );
 
-        return $obj->render();
+        //create a theme object of specified theme name for the given captcha type
+        $themeName = $data['theme'];
+
+        if( $themeName && class_exists( $themeName ) ){
+            $themeObj = new $themeName( $data['themeOptions'] );
+        }else{
+            $themeObj = new Themes\DefaultTheme( $data['themeOptions'] );
+        }
+
+        //now render the captcha by calling the render function of the theme
+        return $themeObj->render( $data );
     }
 
     /*
@@ -176,8 +197,20 @@ class Captcha extends BaseCaptcha {
         }
 
         $obj = $this->getObject( $type );
+        $data = $obj->data();
 
-        return $obj->data();
+        $data['cipher'] = $this->encrypt( $data['answer'], $type );
+
+        if( $data['customFieldName'] ){
+            //custom fieldName is set
+            $data['fieldName'] = $data['customFieldName'];
+            $data['hidden'] = '<input type="hidden" name="'.$data['fieldName'].'_challenge" value="'.$data['cipher'] .'" /> ';
+        }else{
+            $data['fieldName'] = $data['cipher'];
+            $data['hidden'] = '';
+        }
+
+        return $data;
     }
 
 
@@ -200,7 +233,13 @@ class Captcha extends BaseCaptcha {
             $obj = $this->getObject( 'recaptcha' );
 
             //call verify function in Recaptcha class, (it has different implementation)
-            return $obj->verify( $data, $remoteAddress );
+            if( $obj->verify( $data, $remoteAddress ) ){
+                $this->error = false;
+                return true;
+            }else{
+                $this->error = $obj->errorMsg;
+                return false;
+            }
         }
 
         //if customFieldName is disabled, we are using random field names
@@ -208,11 +247,17 @@ class Captcha extends BaseCaptcha {
         if( !$fieldName ){
             foreach( $data as $key => $value ){
                 //check if the key matches our particular challange format after decryption
-                if( $this->verify( $key, $value ) ){
+                if( $this->verify( $key, $value, $isCaptchaField ) ){
                     //this is captcha field
                     return true;
+                }else{
+                    if( $isCaptchaField ){
+                        //we have found captcha field and the answer is wrong
+                        return false;
+                    }
                 }
             }
+            $this->error = $this->msgInvalidCaptcha;
         }else{
             if( isset( $data[$fieldName], $data[$fieldName.'_challenge'] ) ){
                 if( $this->verify( $data[$fieldName.'_challenge'], $data[$fieldName] ) ){
@@ -221,6 +266,117 @@ class Captcha extends BaseCaptcha {
             }
         }
         return false;
+    }
+
+    public function encrypt( $answer, $captchaType ){
+
+        $ivSize = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC );
+
+        $iv = mcrypt_create_iv( $ivSize, MCRYPT_RAND );
+
+        $time =  base_convert( time(), 10, 36 );
+
+        $uid =  base_convert( uniqid(), 10, 36 );
+
+        $plainText = $uid.'_'.$time.'_'.$answer.'_'.$captchaType;
+
+        $cipherTextDec = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $this->secretKey, $plainText, MCRYPT_MODE_CBC, $iv ) ;
+
+        return rtrim( base64_encode( $iv.$cipherTextDec ), '=' ) ;
+
+    }
+
+
+    public function decrypt( $cipherText ){
+
+        $ivSize = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC );
+
+        $cipherTextDec = base64_decode( $cipherText );
+
+        if( !$cipherTextDec ){
+            //cipherText is not base64 encoded so its invalid/corrupt
+            return false;
+        }
+
+        if( strlen( $cipherTextDec) < $ivSize ){
+            return false;
+        }
+
+        # retrieves the IV, iv_size should be created using mcrypt_get_iv_size()
+        $ivDec = substr( $cipherTextDec, 0, $ivSize );
+
+
+        # retrieves the cipher text (everything except the $iv_size in the front)
+        $cipherTextDec = substr( $cipherTextDec, $ivSize );
+
+        # may remove 00h valued characters from end of plain text
+        return rtrim(
+            mcrypt_decrypt(
+                MCRYPT_RIJNDAEL_256,
+                $this->secretKey,
+                $cipherTextDec,
+                MCRYPT_MODE_CBC,
+                $ivDec
+            ),
+            "\0"
+        );
+
+    }
+
+
+    public function verify( $cipherText, $answer, &$isCaptchaField = false  ){
+        $plainText = self::decrypt( $cipherText );
+
+        if( !$plainText ){
+            //cipherText is not base64 encoded so its invalid/corrupt
+            $this->error = $this->msgInvalidCaptcha;
+            return false;
+        }
+
+        if( preg_match( "/^([a-zA-Z0-9]{4,9})_([a-zA-Z0-9]{6})_([a-zA-Z0-9\-]*)_([a-zA-Z0-9]+)$/", $plainText, $matches ) ){
+            $isCaptchaField = true;
+            $uid = base_convert( $matches[1], 36, 10 );
+            $time = base_convert( $matches[2], 36, 10 );
+            $correctAnswer = $matches[3];
+            $type = $matches[4];
+
+            //check if the captcha is too old
+            $age = time() - $time;
+            if( $age > $this->life * 3600 || $age < 0 ){
+                $this->error = $this->msgExpiredCaptcha;
+                return false;
+            }
+
+
+            //check if answer is correct
+            if( $answer != $correctAnswer ){
+                $obj = $this->getObject( $type);
+                $this->error = $obj->errorMsg;
+                return false;
+            }
+
+            //check if this captcha is answered successfully recently
+            if( $this->isAnsweredRecently() ){
+                //this captcha has already been answered successfully quiet recently
+                $this->error = $this->msgAnsweredRecently;
+                return false;
+            }else{
+                $this->recordSuccessfulAnswer();
+                $this->error = false;
+                return true;
+            }
+        }
+
+        $this->errorString = $this->msgInvalidCaptcha;
+        return false;
+    }
+
+    public function isAnsweredRecently(){
+        return false;
+    }
+
+    public function recordSuccessfulAnswer(){
+
     }
 
 }
