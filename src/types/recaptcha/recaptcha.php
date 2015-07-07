@@ -14,8 +14,11 @@ class Recaptcha extends BaseCaptcha {
     var $publicKey = false;
     var $privateKey = false;
 
-    public function render(){
-        return recaptcha_get_html( $this->publicKey );
+    var $errorMsg = "You didn't type the code accurately.";
+
+    public function generateQuestion(){
+        $result['html'] = recaptcha_get_html( $this->publicKey );
+        return $result;
     }
 
 

@@ -11,7 +11,8 @@ gif             |   ![Gif Captcha Screenshot](/examples/gif-captcha.gif) | Asks 
 ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif) | Asks user to identify all or some characters from the animated image. | Moderate | Average
 math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif) | Asks user to solve simple mathematical expression. | Below Average | Easy
 honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif) | Asks user to leave the captcha field blank. | Low | Very Easy
-recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.jpg) *(image is resized)* | Asks user to identify all characters displayed in the jpg image. | High | Average
+recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.jpg) *(image is resized)* | Google ReCaptcha. Asks user to identify all characters displayed in the jpg image. | High | Average
+nocaptcha       |   ![NoCaptcha Screenshot](/examples/nocaptcha-captcha.jpg) *(image is resized)* | Google NoCaptcha(Recaptcha v2.0). | Moderate | Average
 
 ## Installation:
 
@@ -90,11 +91,11 @@ param | description
 *options* | field contains the array with type of captcha/s that can be rendered as keys and their configurations as value array. If we pass more than one captcha type with it's configuration, it will randomly display one type of captcha from the supplied types. We will see configuration details of each type in details in next section.
 
 #### Options
-Right now we can render 6 types of captcha namely *image*, *gif*, *ascii*, *math*, *honeypot* and *recaptcha*.
+Right now we can render 7 types of captcha namely *image*, *gif*, *ascii*, *math*, *honeypot*, *recaptcha* and *nocaptcha*.
 Now lets look in details at the supported configuration parameters for each of them.
 
 ##### Image Captcha
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *minCodeLength*       |     4       | Optional | Maximum length of code to be displayed in the image |
 | *maxCodeLength*       |     8       | Optional | Maximum length of code to be displayed in the image |
@@ -107,7 +108,7 @@ Now lets look in details at the supported configuration parameters for each of t
 
 
 ##### Gif Captcha(GIF Animated captcha)
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *totalFrames*         |     60      | Optional | Total number of frames to be produced. Please note having too many frames may overload server during heavy traffic |
 | *delay*               |     5       | Optional | delay between frames in Millisecond
@@ -122,7 +123,7 @@ Now lets look in details at the supported configuration parameters for each of t
 
 
 ##### ASCII Captcha
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *fonts*               | comic.ttf   | Optional | array containing font name(without extension) as key and the size to be rendered in pixels as value. The figlet fonts vary in size when rendered so in order to control the height and width of the captcha we need to pass the font-size. For large fonts you can pass smaller value of font size. |
 | *fontPath*            |     null    | Optional | If you want your own Figlet fonts you can specify path to the folder containing them here. |
@@ -158,7 +159,7 @@ Unless you provide a *fontPath* parameter, it will look in src/types/ascii/fonts
 
 
 ##### Math Captcha(Simple Mathematical expression)
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *level*               |     4   | Optional | Number of variables(digits) in the mathematical expression |
 | *description*         |   null  | Required | Some text asking the user to solve the mathematical expression. |
@@ -167,7 +168,7 @@ Unless you provide a *fontPath* parameter, it will look in src/types/ascii/fonts
 
 
 ##### Honeypot Captcha
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *description*         |   null  | Required | Some text asking the user to leave the captcha field blank(bots will try to fill it up and get caught) |
 
@@ -175,13 +176,26 @@ Unless you provide a *fontPath* parameter, it will look in src/types/ascii/fonts
 
 
 ##### Recaptcha
-| Configuration Param | Default Value | Required | Decription |
+| Configuration Param | Default Value | Required | Description |
 | ------------------- | ------------- | -------- | ---------- |
 | *publicKey*           |   null  | Required | You Recaptcha Public key given to you by Google |
 | *privateKey*          |   null  | Required | You Recaptcha Public key given to you by Google |
 
 Note: You can register and get your recaptcha keys at
 http://www.google.com/recaptcha
+
+
+
+
+##### Nocaptcha
+| Configuration Param | Default Value | Required | Description |
+| ------------------- | ------------- | -------- | ---------- |
+| *siteKey*           |   null  | Required | You Recaptcha Site key given to you by Google |
+| *secretKey*         |   null  | Required | You Recaptcha Secret key given to you by Google |
+| *lang*              |   en    | Optional | language code as on https://developers.google.com/recaptcha/docs/language |
+Note: You can register and get your recaptcha keys at
+http://www.google.com/recaptcha
+
 
 
 ##### You can generate random type of captcha from multiple configured types.
@@ -264,9 +278,8 @@ if( $captcha->validate( array_intersect_key($_POST, array_flip(['my_captcha', 'm
 3. Custom Tooltip
 
 ## Planned Features
-1. Google NoCaptcha
-2. Refresh url & refresh button
-3. Custom background image for image and gif captcha
+1. Refresh url & refresh button
+2. Custom background image for image and gif captcha
 
 
 ## License
