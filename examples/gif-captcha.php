@@ -19,6 +19,7 @@ $captcha = new \MultiCaptcha\Captcha([
 
 if( isset( $_REQUEST['submit'] ) ){
     var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
+    var_dump( $captcha->error );
 }
 ?>
 

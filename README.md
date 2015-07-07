@@ -264,8 +264,9 @@ if( $captcha->validate( array_intersect_key($_POST, array_flip(['my_captcha', 'm
 3. Custom Tooltip
 
 ## Planned Features
-1. Refresh url & refresh button
-2. Custom background image for image and gif captcha
+1. Google NoCaptcha
+2. Refresh url & refresh button
+3. Custom background image for image and gif captcha
 
 
 ## License
