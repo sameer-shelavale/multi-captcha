@@ -15,6 +15,8 @@ class HoneyPot extends BaseCaptcha {
     var $class = false;
     var $style = false;
 
+    var $errorMsg = "You didn't leave the captcha field blank.";
+
     public function generateQuestion(){
         $answer = '';
 

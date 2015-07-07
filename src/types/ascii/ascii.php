@@ -27,6 +27,8 @@ class Ascii extends BaseCaptcha {
     var $maxFontSize = 12;
     var $minFontSize = 5;
 
+    var $errorMsg = "You didn't type the code accurately.";
+
     private static $numberTypes = array(
         array( '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '17', '16', '18', '19', '20'),
         array( 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'),

@@ -12,16 +12,13 @@ class Math extends BaseCaptcha {
 
     var $description = "Answer following question if you are human";
     var $id = false;
-    var $class = false;
     var $level = 3;
 
     var $tooltip = array(
-        'en' => 'Answer the above mathematical question.'
-    );
-
-    var $helpHtml = array(
         'en' => 'Pleae answer the given mathematical question to prove that you are not a automated bot. <br/>It is required for avoiding spam.'
     );
+
+    var $errorMsg = "Your answer for the math question was wrong.";
 
 
     function generateQuestion( ){
