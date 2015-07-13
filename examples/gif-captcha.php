@@ -14,12 +14,20 @@ $captcha = new \MultiCaptcha\Captcha([
             'totalFrames'=>50,
             'delay'=>20
         ]
-    ]
+    ],
+    'refreshUrl'=>'gif-captcha.php?captcha=refresh',
+    'helpUrl'=>'http://github.com/sameer-shelavale/multi-captcha'
 ] );
 
-if( isset( $_REQUEST['submit'] ) ){
-    var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
-    var_dump( $captcha->error );
+if( isset($_GET['captcha']) &&  $_GET['captcha'] == 'refresh' ){
+    echo $captcha->render();
+    exit;
+}elseif( isset( $_REQUEST['submit'] ) ){
+    if( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) ) {
+        echo "Correct.";
+    }else{
+        echo "Wrong: ". $captcha->error;
+    }
 }
 ?>
 
