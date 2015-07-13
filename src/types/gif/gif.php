@@ -98,7 +98,7 @@ class Gif extends BaseCaptcha {
         }
 
         $result['question']['type'] = 'image';
-        $result['question']['url'] = $this->getGifImage( $code );
+        $result['question']['content'] = $this->getGifImage( $code );
         $result['description'] = $questionText;
         $result['answer'] = $answer;
 

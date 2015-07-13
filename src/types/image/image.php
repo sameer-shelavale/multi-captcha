@@ -95,7 +95,7 @@ class Image extends BaseCaptcha {
         }
 
         $result['question']['type'] = 'image';
-        $result['question']['url'] = $this->getImage( $code );
+        $result['question']['content'] = $this->getImage( $code );
         $result['description'] = $questionText;
         $result['answer'] = $answer;
 
