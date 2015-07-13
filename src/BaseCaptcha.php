@@ -50,7 +50,7 @@ class BaseCaptcha {
     }
 
 
-    public function setOptions( $options = array() ){
+    public function setParams( $options = array() ){
 
         foreach( $options as $key => $value ){
             if( property_exists( $this, $key ) ){
