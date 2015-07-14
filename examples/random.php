@@ -36,11 +36,13 @@ $captcha = new \MultiCaptcha\Captcha([
             'totalFrames'=>50,
             'delay'=>20
         )
-    ]
+    ],
+    'refreshUrl'=>'random.php?captcha=refresh',
+    'helpUrl'=>'http://github.com/sameer-shelavale/multi-captcha'
 ] );
 
 if( isset($_GET['captcha']) &&  $_GET['captcha'] == 'refresh' ){
-    echo $captcha->render();
+    echo $captcha->refresh();
     exit;
 }elseif( isset( $_REQUEST['submit'] ) ){
     if( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) ) {

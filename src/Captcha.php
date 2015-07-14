@@ -142,7 +142,7 @@ class Captcha extends BaseCaptcha {
      * function getHtml()
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
-    public function render( $type = null ){
+    public function render( $type = null, $refresh=false ){
 
         //first select the type
         if( count( $this->enabledTypeOptions ) == 0 ){
@@ -174,7 +174,18 @@ class Captcha extends BaseCaptcha {
         }
 
         //now render the captcha by calling the render function of the theme
+        if( $refresh ){
+            return $themeObj->refresh( $data );
+        }
         return $themeObj->render( $data );
+    }
+
+    /*
+     * function getHtml()
+     * @return html of the captcha code, this is to be inserted in the forms directly
+     */
+    public function refresh( $type = null ){
+        return $this->render( $type, true );
     }
 
     /*

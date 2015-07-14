@@ -17,7 +17,7 @@ $captcha = new \MultiCaptcha\Captcha([
 ] );
 
 if( isset($_GET['captcha']) &&  $_GET['captcha'] == 'refresh' ){
-    echo $captcha->render();
+    echo $captcha->refresh();
     exit;
 }elseif( isset( $_REQUEST['submit'] ) ){
     if( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) ) {

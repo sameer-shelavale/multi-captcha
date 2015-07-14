@@ -12,8 +12,8 @@ class DefaultTheme {
     var $fieldStyle = 'background-color:#f66a03; border:2px solid #fff; font-size:120%; font-weight:bold; border-radius:3px;width:144px;';
     var $containerStyle = 'border:3px solid #000; border-radius: 5px; padding: 10px; display: table; margin: 2px; background-color: #f69d03; font-family: Arial; font-size: 14px; max-width: 180px;position:relative;';
     var $questionImageStyle = 'border-radius:3px; margin-bottom:5px;';
-    var $questionTextStyle = 'font-size:120%; font-weight:bold;background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;';
-    var $questionAsciiStyle = 'background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;';
+    var $questionTextStyle = 'font-size:120%; font-weight:bold;background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;min-width:172px;';
+    var $questionAsciiStyle = 'background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;min-width:172px;';
     var $questionContainerStyle = '';
     var $labelStyle = 'font-size:80%; line-height:100%;';
 
@@ -52,22 +52,16 @@ EOT;
     }
 
 
-    function render( $data ){
-        $html =
-            '<div
-                style="'.$this->containerStyle.'" >';
-
+    function render( $data, $refresh = false ){
+        $html = '<div style="'.$this->containerStyle.'" >';
         $html .= '<div style="'.$this->questionContainerStyle.'">'. $this->renderChallenge( $data ).'</div>';
-
         $html .= '<div>'.$this->renderResponseField( $data ).$this->renderTools( $data ).'</div>';
-
         $html .= '<div>'.$this->renderLabel( $data ).'</div>';
-
-
-
         $html .= '</div>';
-        $html .= $this->renderRefreshScript( $data );
-        $html .= $this->extraHtml;
+        if( !$refresh ){
+            $html .= $this->extraHtml;
+            $html .= $this->renderRefreshScript( $data );
+        }
 
         return $html;
 
@@ -133,7 +127,7 @@ EOT;
         AJAX.onreadystatechange = function() {
             if (AJAX.readyState==4) {
                 //update captcha html
-                btnObj.parentElement.parentElement.parentElement.outerHTML = this.responseText;
+                btnObj.parentElement.parentElement.outerHTML = this.responseText;
                 AJAX=null;
             }
         }
@@ -150,9 +144,9 @@ EOT;
 
 
     /*
-     * returns the data for refreshing the captcha as json encoded array
+     * returns the data for refreshing the captcha array
      */
-    function renderRefresh( $data ){
-
+    function refresh( $data ){
+        return $this->render( $data, true );
     }
 } 
