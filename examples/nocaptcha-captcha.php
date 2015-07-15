@@ -11,12 +11,18 @@ $captcha = new \MultiCaptcha\Captcha([
             'siteKey'=> "6LfObQkTAAAAADPFtykBvYkNegv2lkGjThGxEvqC", // replace this with your site key
             'secretKey' => "6LfObQkTAAAAADnUOa3Ry5H_6_Iymt-8-RFDQGdH" // replace this with your secret key
         ]
-    ]
+    ],
+    'refreshUrl'=>'ascii-captcha.php?captcha=refresh',
+    'helpUrl'=>'http://github.com/sameer-shelavale/multi-captcha'
 ] );
 
 
 if( isset( $_REQUEST['submit'] ) ){
-    var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
+    if( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) ) {
+        echo "Correct.";
+    }else{
+        echo "Wrong: ". $captcha->error;
+    }
 }
 ?>
 

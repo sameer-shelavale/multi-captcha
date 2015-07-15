@@ -16,8 +16,8 @@ class Nocaptcha extends BaseCaptcha {
     var $errorMsg = "You didn't type the code accurately.";
 
     public function generateQuestion(){
-
-        $result['html'] = '<div class="g-recaptcha" data-sitekey="'. $this->siteKey .'"></div>
+        $result['question']['type'] = 'html';
+        $result['question']['content'] = '<div class="g-recaptcha" data-sitekey="'. $this->siteKey .'"></div>
             <script type="text/javascript"
                     src="https://www.google.com/recaptcha/api.js?hl='.$this->lang.'">
             </script>';

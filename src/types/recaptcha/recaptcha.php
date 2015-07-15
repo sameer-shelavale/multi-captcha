@@ -17,7 +17,8 @@ class Recaptcha extends BaseCaptcha {
     var $errorMsg = "You didn't type the code accurately.";
 
     public function generateQuestion(){
-        $result['html'] = recaptcha_get_html( $this->publicKey );
+        $result['question']['type'] = 'html';
+        $result['question']['content'] = recaptcha_get_html( $this->publicKey );
         return $result;
     }
 

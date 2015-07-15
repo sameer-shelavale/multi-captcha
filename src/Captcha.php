@@ -63,23 +63,19 @@ class Captcha extends BaseCaptcha {
     var $msgAnsweredRecently = "The captcha challenge is already solved. Did you resubmit the form? "; //if the question is already asked quiet recently
     var $msgFieldNotFound = "Captcha challenge field is not found."; // Captcha field is not found in the submitted data
 
+    var $refreshUrl = null;
+    var $helpUrl = null;
 
     /*
      * constructor
      */
     function __construct( $params ){
-        if( isset( $params['secret'] ) ){
-            $this->secretKey = $params['secret'];
-        }
+        $this->setParams( $params );
 
         if( isset( $params['life'] )&& is_numeric( $params['life'] ) ){
             $this->life = $params['life'];
         }else{
             $this->life = 10;
-        }
-
-        if( isset( $params['customFieldName'] ) ){
-            $this->customFieldName = $params['customFieldName'];
         }
 
         if( isset( $params['options'] ) ){
@@ -123,7 +119,7 @@ class Captcha extends BaseCaptcha {
             }
             //if the captcha type object is already initialized we will update the options in the object
             if( isset( $this->objects[$type] ) ){
-                $this->objects[$type]->setOptions( $this->enabledTypeOptions[$type] );
+                $this->objects[$type]->setParams( $this->enabledTypeOptions[$type] );
             }
         }
     }
@@ -136,7 +132,7 @@ class Captcha extends BaseCaptcha {
                 $this->life,
                 $this->customFieldName
             );
-            $this->objects[$type]->setOptions( $this->enabledTypeOptions[$type] );
+            $this->objects[$type]->setParams( $this->enabledTypeOptions[$type] );
         }
         return $this->objects[$type];
     }
@@ -146,7 +142,7 @@ class Captcha extends BaseCaptcha {
      * function getHtml()
      * @return html of the captcha code, this is to be inserted in the forms directly
      */
-    public function render( $type = null ){
+    public function render( $type = null, $refresh=false ){
 
         //first select the type
         if( count( $this->enabledTypeOptions ) == 0 ){
@@ -165,7 +161,7 @@ class Captcha extends BaseCaptcha {
         $data = $this->data( $type );
 
         if( $type == 'recaptcha' || $type == 'nocaptcha' ){
-            return $data['html'];
+            return $data['question']['content'];
         }
 
         //create a theme object of specified theme name for the given captcha type
@@ -178,7 +174,18 @@ class Captcha extends BaseCaptcha {
         }
 
         //now render the captcha by calling the render function of the theme
+        if( $refresh ){
+            return $themeObj->refresh( $data );
+        }
         return $themeObj->render( $data );
+    }
+
+    /*
+     * function getHtml()
+     * @return html of the captcha code, this is to be inserted in the forms directly
+     */
+    public function refresh( $type = null ){
+        return $this->render( $type, true );
     }
 
     /*
@@ -217,6 +224,9 @@ class Captcha extends BaseCaptcha {
                 $data['hidden'] = '';
             }
         }
+
+        $data['refreshUrl'] = $this->refreshUrl;
+        $data['helpUrl'] = $this->helpUrl;
 
         return $data;
     }

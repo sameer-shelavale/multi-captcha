@@ -89,6 +89,8 @@ param | description
 *life* | total number of hours the generated captcha will be valid. If you set it to 2, then after 2 hours the validate() function will return false even if you enter the correct code. Basically it means the user is expected to submit the form within these many hours after opening the form.
 *customFieldName* | a custom name for the captcha answer field. If not provided it will use encrypted random name for the field. *Note: Recaptcha type does not honor this parameter.*
 *options* | field contains the array with type of captcha/s that can be rendered as keys and their configurations as value array. If we pass more than one captcha type with it's configuration, it will randomly display one type of captcha from the supplied types. We will see configuration details of each type in details in next section.
+*refreshUrl* | (Optional) url from which we will GET the new captcha using AJAX. If not provided refresh button will not be displayed. Also note that this feature is useful mainly with image, gif, ascii and math captcha.
+*helpUrl* | (Optional) url which will provide help related to the captcha type. This url will open in new tab/window.
 
 #### Options
 Right now we can render 7 types of captcha namely *image*, *gif*, *ascii*, *math*, *honeypot*, *recaptcha* and *nocaptcha*.
@@ -246,6 +248,17 @@ echo $captcha->render() ;
 
 That will do it.(note that $captcha is the name of object you initialized)
 
+### Refresh
+
+To display the refresh button, its necessary to provide the refreshUrl.
+Then in script of that url you can do.
+
+```php
+echo $captcha->refresh() ;
+exit; //this is important to ensure no html is trailing the captcha
+```
+Note: make sure no html is displayed before or after the *captcha->refresh();*
+You can also render and refresh at same page, please refer to the gif, ascii, image and math captcha examples.
 
 ### Validate
 You can validate your form data simply by doing
@@ -273,13 +286,10 @@ if( $captcha->validate( array_intersect_key($_POST, array_flip(['my_captcha', 'm
 ```
 
 ## Features under progress
-1. Customizable templates so have your own look and feel
-2. Multi-language support
-3. Custom Tooltip
+1. Multi-language support
 
 ## Planned Features
-1. Refresh url & refresh button
-2. Custom background image for image and gif captcha
+1. Custom background image for image and gif captcha
 
 
 ## License

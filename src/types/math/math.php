@@ -15,7 +15,7 @@ class Math extends BaseCaptcha {
     var $level = 3;
 
     var $tooltip = array(
-        'en' => 'Pleae answer the given mathematical question to prove that you are not a automated bot. <br/>It is required for avoiding spam.'
+        'en' => 'Pleae answer the given mathematical question to prove that you are not a automated bot. It is required for avoiding spam.'
     );
 
     var $errorMsg = "Your answer for the math question was wrong.";
