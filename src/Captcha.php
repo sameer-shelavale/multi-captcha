@@ -7,10 +7,10 @@
  */
 namespace MultiCaptcha;
 
-require_once ( ltrim( __DIR__, '/'). '/BaseCaptcha.php' );
+require_once ( rtrim( __DIR__, '/'). '/BaseCaptcha.php' );
 //Auto load the required php classes
 spl_autoload_register( function($className){
-    $curDir = ltrim( __DIR__, '/');
+    $curDir = rtrim( __DIR__, '/');
     //$cls = array_pop( explode('\\', $className) );
 
     if( preg_match( '/MultiCaptcha\\\Types\\\(.+)\\\(.+)$/i', $className, $matches ) ){
