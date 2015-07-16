@@ -6,13 +6,13 @@ As the name says, this is one package to render them all! Multiple types of CAPT
 
 Captcha Type    |   Screenshot  |  Description  |  Protection  | Difficulty for humans
 -------------   |   ----------  |  -----------  |  --------------  | --------------
-image           |   ![Image Captcha Screenshot](/examples/image-captcha.gif) | Asks user to identify all or some characters from the jpg image. | High | Average
-gif             |   ![Gif Captcha Screenshot](/examples/gif-captcha.gif) | Asks user to identify all or some characters from the animated image. | High | Average
-ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif) | Asks user to identify all or some characters from the animated image. | Moderate | Average
-math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif) | Asks user to solve simple mathematical expression. | Below Average | Easy
-honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif) | Asks user to leave the captcha field blank. | Low | Very Easy
-recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.jpg) *(image is resized)* | Google ReCaptcha. Asks user to identify all characters displayed in the jpg image. | High | Average
-nocaptcha       |   ![NoCaptcha Screenshot](/examples/nocaptcha-captcha.jpg) *(image is resized)* | Google NoCaptcha(Recaptcha v2.0). | Moderate | Average
+image           |   ![Image Captcha Screenshot](/examples/image-captcha.gif) | Asks user to identify all or some characters from the jpg image. [Live demo](http://demo.techrevol.com/multicaptcha/examples/image-captcha.php) | High | Average
+gif             |   ![Gif Captcha Screenshot](/examples/gif-captcha.gif) | Asks user to identify all or some characters from the animated image. [Live demo](http://demo.techrevol.com/multicaptcha/examples/gif-captcha.php) | High | Average
+ascii           |   ![Ascii Captcha Screenshot](/examples/ascii-captcha.gif) | Asks user to identify all or some characters from code displayed in ASCII art. [Live demo](http://demo.techrevol.com/multicaptcha/examples/ascii-captcha.php) | Moderate | Average
+math            |   ![Math Captcha Screenshot](/examples/math-captcha.gif) | Asks user to solve simple mathematical expression. | Below Average [Live demo](http://demo.techrevol.com/multicaptcha/examples/math-captcha.php) | Easy
+honeypot        |   ![Honeypot Captcha Screenshot](/examples/honeypot-captcha.gif) | Asks user to leave the captcha field blank. [Live demo](http://demo.techrevol.com/multicaptcha/examples/honeypot-captcha.php) | Low | Very Easy
+recaptcha       |   ![Recaptcha Screenshot](/examples/recaptcha-captcha.jpg) *(image is resized)* | Google ReCaptcha. Asks user to identify all characters displayed in the jpg image. [Live demo](http://demo.techrevol.com/multicaptcha/examples/recaptcha-captcha.php) | High | Average
+nocaptcha       |   ![NoCaptcha Screenshot](/examples/nocaptcha-captcha.jpg) *(image is resized)* | Google NoCaptcha(Recaptcha v2.0). [Live demo](http://demo.techrevol.com/multicaptcha/examples/nocaptcha-captcha.php) | Moderate | Average
 
 ## Installation:
 
@@ -257,7 +257,7 @@ Then in script of that url you can do.
 echo $captcha->refresh() ;
 exit; //this is important to ensure no html is trailing the captcha
 ```
-Note: make sure no html is displayed before or after the *captcha->refresh();*
+Note: make sure no html is displayed before or after the `captcha->refresh();`
 You can also render and refresh at same page, please refer to the gif, ascii, image and math captcha examples.
 
 ### Validate
