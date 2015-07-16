@@ -1,6 +1,6 @@
 <?php
 
-include_once( "../src/captcha.php");
+include_once( "../src/Captcha.php");
 include_once( "../vendor/autoload.php");//not required if you have PSR-4 autoloader
 
 

@@ -1,6 +1,6 @@
 <?php
 
-include_once( "../src/captcha.php");
+include_once( "../src/Captcha.php");
 
 
 $captcha = new \MultiCaptcha\Captcha([

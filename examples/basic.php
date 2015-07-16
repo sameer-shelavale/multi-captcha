@@ -1,6 +1,6 @@
 <?php
 
-include_once( "../src/captcha.php");
+include_once( "../src/Captcha.php");
 
 
 $captcha = new \MultiCaptcha\Captcha([
@@ -8,7 +8,11 @@ $captcha = new \MultiCaptcha\Captcha([
 ] );
 
 if( isset( $_REQUEST['submit'] ) ){
-    var_dump( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) );
+    if( $captcha->validate( $_POST, $_SERVER['REMOTE_ADDR'] ) ) {
+        echo "Correct.";
+    }else{
+        echo "Wrong: ". $captcha->error;
+    }
 }
 ?>
 <h2>Display a random captcha from types initialized using "<i>options</i>" parameter.</h2>
