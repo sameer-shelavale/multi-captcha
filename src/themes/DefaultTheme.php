@@ -57,9 +57,9 @@ EOT;
         $html .= '<div style="'.$this->questionContainerStyle.'">'. $this->renderChallenge( $data ).'</div>';
         $html .= '<div>'.$this->renderResponseField( $data ).$this->renderTools( $data ).'</div>';
         $html .= '<div>'.$this->renderLabel( $data ).'</div>';
+        $html .= $this->extraHtml;
         $html .= '</div>';
         if( !$refresh ){
-            $html .= $this->extraHtml;
             $html .= $this->renderRefreshScript( $data );
         }
 

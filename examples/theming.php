@@ -8,7 +8,13 @@ $captcha = new \MultiCaptcha\Captcha([
     'options' =>  [
         'math' => array(
             'description'=> "Answer following question if you are human",
-            'level' => 4
+            'level' => 4,
+            'themeOptions' => [
+                'containerStyle' => 'border:1px solid #8f1414; border-radius: 5px; padding: 5px; display: table; margin: 2px; background-color: #9b8888; font-family: Helvetica; font-size: 14px; max-width: 180px;position:relative;',
+                'fieldStyle' => 'background-color:#857070; border:2px solid #fff; color:#fff; font-size:120%; font-weight:bold; border-radius:3px;width:144px;',
+                'labelStyle' => 'font-size:80%; line-height:100%; color: #fff;',
+                'questionTextStyle' => 'font-size: 120%; font-weight: bold; border-radius: 3px; padding: 4px; margin-bottom: 2px; text-align: center; display: block; min-width: 172px; background-color: #8f1414; color: #fff;'
+            ]
         ),
         'image' => array(
             'maxCodeLength' => 8,
@@ -85,7 +91,7 @@ $captcha = new \MultiCaptcha\Captcha([
         ),
 
     ],
-    'refreshUrl'=>'random.php?captcha=refresh',
+    'refreshUrl'=>'theming.php?captcha=refresh',
     'helpUrl'=>'http://github.com/sameer-shelavale/multi-captcha',
 
 ] );
