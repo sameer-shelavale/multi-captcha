@@ -85,7 +85,7 @@ EOT;
 
     function renderResponseField( $data ){
         $html = '<input type="text" name="'.$data['fieldName'].
-                    '"style="'.$this->fieldStyle.'" class="'.$this->fieldClass;
+                    '"style="'.$this->fieldStyle.'" class="'.$this->fieldClass.'" ';
         if( isset( $data['tooltip'] ) ){
             $html .= 'title="'.$data['tooltip'].'"';
         }
@@ -127,6 +127,7 @@ EOT;
         AJAX.onreadystatechange = function() {
             if (AJAX.readyState==4) {
                 //update captcha html
+                //VERY VERY IMP: update the below line if you extend this class and change the current html structure
                 btnObj.parentElement.parentElement.outerHTML = this.responseText;
                 AJAX=null;
             }
