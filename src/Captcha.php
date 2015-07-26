@@ -60,16 +60,18 @@ class Captcha extends BaseCaptcha {
 
     var $msgInvalidCaptcha = "Invalid captcha challenge."; // if the captcha field is not found or the provided cipherText cant be decrypted
     var $msgExpiredCaptcha = "Captcha challenge expired."; //if the question is expired i.e. user took too long to answer
-    var $msgAnsweredRecently = "The captcha challenge is already solved. Did you resubmit the form? "; //if the question is already asked quiet recently
+    var $msgAnsweredRecently = "The captcha challenge is invalid. Did you resubmit the form? "; //if the question is already asked quiet recently
     var $msgFieldNotFound = "Captcha challenge field is not found."; // Captcha field is not found in the submitted data
 
     var $refreshUrl = null;
     var $helpUrl = null;
-
+    var $cacheSize = 10; //total files to be used for caching idz of submitted captcha
+    var $cacheDir;
     /*
      * constructor
      */
     function __construct( $params ){
+        $this->cacheDir = rtrim( __DIR__). '/cache/';
         $this->setParams( $params );
 
         if( isset( $params['life'] )&& is_numeric( $params['life'] ) ){
@@ -379,20 +381,19 @@ class Captcha extends BaseCaptcha {
             }
 
 
+            //check if this captcha is submitted recently
+            if( $this->isSubmitted( $uid, $time ) ){
+                //this captcha has already been submitted quiet recently
+                $this->error = $this->msgAnsweredRecently;
+                return false;
+            }
+
             //check if answer is correct
             if( $answer != $correctAnswer ){
                 $obj = $this->getObject( $type);
                 $this->error = $obj->errorMsg;
                 return false;
-            }
-
-            //check if this captcha is answered successfully recently
-            if( $this->isAnsweredRecently() ){
-                //this captcha has already been answered successfully quiet recently
-                $this->error = $this->msgAnsweredRecently;
-                return false;
             }else{
-                $this->recordSuccessfulAnswer();
                 $this->error = false;
                 return true;
             }
@@ -402,11 +403,57 @@ class Captcha extends BaseCaptcha {
         return false;
     }
 
-    public function isAnsweredRecently(){
-        return false;
-    }
 
-    public function recordSuccessfulAnswer(){
+    /*
+     * function isSubmitted()
+     *      Checks if a captcha is answered(correct or incorrect) by the same
+     *      or another user earlier as well, if its not submitted this function
+     *      will create a cache record for the captcha using its uid and expiration
+     *      time. Implementing this function is very essential to avoid brute force
+     *      attack with single captcha but different responses.
+     *      This function also removes from cache all records of expired captcha.
+     * @param $uid the unique id of the captcha as retrieved after decoding
+     * @param $createdAt the creation timestamp, used to find expiration time
+     * @return boolean true is the captcha is answered earlier else false
+     *
+     * Note: This function uses file cache the cache directory is specified by
+     *      $this->cacheDir.
+     *      It spreads out the records in multiple files in cache to avoid single file
+     *      becoming too big and slowing down things. The number of storage files in
+     *      cache are specifyed by $this->cacheSize
+     *      and default value is 10. Its recommended to use large value like 1000 or more
+     *      for high traffic websites.
+     *      Alternatively you can extend this class to override this function and
+     *      implement your own caching mechanism.
+     */
+    public function isSubmitted( $uid, $createdAt ){
+        //make out the full file name
+        $fileName = $this->cacheDir . ( intval($uid) % $this->cacheSize );
+        $records = array();
+        //if the file exists fetch the records
+        if( file_exists( $fileName ) ){
+            $records = json_decode( file_get_contents( $fileName ), true );
+        }
+
+        if( isset( $records[$uid] ) ){
+            //captcha is already answered
+            $result = true;
+        }else{
+            //captcha is not answered before
+            $result = false;
+            //add the uid and its expiration time
+            $records[ $uid ] = $createdAt + ( $this->life * 3600 );
+        }
+        //remove the records of expired captcha
+        $currentTime = time();
+        foreach( $records as $i => $expTime ){
+            if( $expTime < $currentTime ){
+                unset( $records[$i] );
+            }
+        }
+        //save the updated records back in the file
+        file_put_contents( $fileName, json_encode( $records ));
+        return $result;
 
     }
 

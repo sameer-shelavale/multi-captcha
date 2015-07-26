@@ -1,6 +1,6 @@
 {
     "name": "sameer-shelavale/multi-captcha",
-    "description": "Multiple(7) types of CAPTCHA in one package. Supports Gif captcha( Animated Gif captcha), Image Captcha( User has to type SOME OR ALL part of code displayed in the image), HoneyPot captcha(It simply adds an empty field asking users to leave it blank. Bots fill it up.), ASCII captcha(It displays the CAPTCHA text as ASCII Art. User has to type SOME OR ALL part of the code.), Math captcha( It asks user to solve simple mathematical expressions.), Recaptcha(Google Recaptcha) and NoCaptcha(Google ReCaptcha v2.0).",
+    "description": "Multiple(7) types of CAPTCHA in one package. Supports Gif captcha( Animated Gif captcha), Image Captcha( User has to type SOME OR ALL part of code displayed in the image), HoneyPot captcha(It simply adds an empty field asking users to leave it blank. Bots fill it up.), ASCII captcha(It displays the CAPTCHA text as ASCII Art. User has to type SOME OR ALL part of the code.), Math captcha( It asks user to solve simple mathematical expressions.), Recaptcha(Google Recaptcha) and NoCaptcha(Google ReCaptcha v2.0). This package also has captcha refresh feature.",
     "keywords": ["captcha", "multi captcha", "image captcha", "gif captcha", "animated captcha", "animated gif captcha", "ASCII captcha", "honeypot", "honeypot captcha", "math captcha", "mathematical captcha", "ReCaptcha", "Google ReCaptcha", "NoCaptcha", "Google NoCaptcha"],
     "minimum-stability": "stable",
     "license": "AGPL3.0",

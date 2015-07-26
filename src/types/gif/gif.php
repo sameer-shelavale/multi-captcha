@@ -22,12 +22,18 @@ class Gif extends BaseCaptcha {
     var $width      = 150;  // width of image in pixels
     var $height     = 40;   // height of the image in pixels
 
-    var $font = 'comic.ttf';
+    var $font;
 
     var $totalFrames = 60;
     var $delay = 5;
 
     var $errorMsg = "You didn't type the code accurately.";
+
+    public function __construct( $secKey, $captchaLife, $customFieldName = null ){
+        parent::__construct( $secKey, $captchaLife, $customFieldName );
+        $this->font = rtrim( __DIR__, '/').'/../../fonts/comic.ttf';
+    }
+
 
     private static $numberTypes = array(
         array( '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '17', '16', '18', '19', '20'),

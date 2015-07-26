@@ -2,6 +2,13 @@
 
 As the name says, this is one package to render them all! Multiple types of CAPTCHA in one package. Sometimes we just need to avoid spambots still want to keep the forms user-friendly and sometimes we need complete protection even if becomes a bit complex for users. MultiCaptcha helps you have uniform Captcha validation code over your projects.
 
+## Key Features
+1. 7 types of captcha supported with multitude of configuration options for each of them.
+2. Shows refresh button (you need to provide refresh url).
+3. Each Captcha challenge can be submitted only once.
+4. Customizable error messages
+5. You can customize the look and feel using *themeOptions* Or you can write your own theme/s.
+
 ## Supported types of CAPTCHA
 
 Captcha Type    |   Screenshot  |  Description  |  Protection  | Difficulty for humans
@@ -45,6 +52,8 @@ composer update
 ### PHP Include
 Or you can download the zip/rar archive and extract it and copy the /src folder to appropriate location in your project folder.
 And then include the captcha.php
+
+Note: Make sure the cache directory is writable.
 
 ```
 include_once( 'PATH-TO-MULTI-CAPTCHA-FOLDER/src/Captcha.php' );
@@ -106,7 +115,7 @@ Now lets look in details at the supported configuration parameters for each of t
 | *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
 | *width*               |     150     | Optional | Width of the captcha image in pixels |
 | *height*              |     40      | Optional | Height of the captcha image in pixels |
-| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
+| *font*                | src/fonts/segoesc.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### Gif Captcha(GIF Animated captcha)
@@ -121,7 +130,7 @@ Now lets look in details at the supported configuration parameters for each of t
 | *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
 | *width*               |     150     | Optional | Width of the captcha image in pixels |
 | *height*              |     40      | Optional | Height of the captcha image in pixels |
-| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
+| *font*                | src/fonts/comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### ASCII Captcha
@@ -284,6 +293,103 @@ if( $captcha->validate( array_intersect_key($_POST, array_flip(['my_captcha', 'm
     //do further processing, validate individual form fields
 }
 ```
+
+### Themes/customization
+MultiCaptcha ships with a default theme named DefaultTheme. This theme supports customization of its color/style through various parameters nested under *themeOptions*.
+e.g. you can change the background color to blue
+```
+$captcha = new \MultiCaptcha\Captcha([
+    'secret'=>    "form1-secret-key",
+    'options' =>  [
+        'image' => array(
+            'maxCodeLength' => 8,
+            'font'=>'../src/types/image/comic.ttf',
+            'width'=>180,
+            'themeOptions' => [
+                'containerStyle' => 'border:1px solid #0f702d; border-radius: 5px; padding: 5px; display: table; margin: 2px; background-color: #29713f; font-family: Helvetica; font-size: 14px; max-width: 180px;position:relative;',
+                'fieldStyle' => 'background-color:#52785e; border:2px solid #fff; color:#fff; font-size:120%; font-weight:bold; border-radius:3px;width:144px;',
+                'labelStyle' => 'font-size:80%; line-height:100%; color: #fff;',
+            ]
+        ),
+        'ascii' => array(
+            'maxCodeLength' => 8,
+            'fonts'=>array(
+                'banner'=> 4,
+                'doom'=> 8,
+                'small'=>'8'
+            ),
+            'themeOptions' => [
+                'containerStyle' => 'border:1px solid #1e2a37; border-radius: 5px; padding: 10px; display: table; margin: 2px; background-color: #374c63; font-family: Helvetica; font-size: 14px; max-width: 180px;position:relative;',
+                'fieldStyle' => 'background-color:#4d5d6f; border:2px solid #fff; color:#fff; font-size:120%; font-weight:bold; border-radius:3px;width:144px;',
+                'labelStyle' => 'font-size:80%; line-height:100%; color: #fff;'
+            ]
+        ),
+    ],
+    'refreshUrl'=>'random.php?captcha=refresh',
+    'helpUrl'=>'http://github.com/sameer-shelavale/multi-captcha',
+
+] );
+```
+Note: each captcha type can have its own *theme* and *themeOptions*
+
+#### themeOptions for DefaultTheme
+| Configuration Param | Description | Default Value |
+| ------------------- | ----------- | ------------- |
+| *fieldClass*        | class for the input field  |
+| *fieldStyle*        | css styles  for the input field  | background-color:#f66a03; border:2px solid #fff; font-size:120%; font-weight:bold; border-radius:3px;width:144px;
+| *containerStyle*    | css styles  for the main container which contains all captcha elements (without the *style=* part and without enclosing quotes) | border:3px solid #000; border-radius: 5px; padding: 10px; display: table; margin: 2px; background-color: #f69d03; font-family: Arial; font-size: 14px; max-width: 180px;position:relative
+| *questionImageStyle*| css styles for  the image code(for *image* or *gif* types ) | border-radius:3px; margin-bottom:5px;
+| *questionTextStyle* | css styles for the question/challenge text(for *math* type)| font-size:120%; font-weight:bold;background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;min-width:172px;
+| *questionAsciiStyle*| css styles for ASCII text(for the challenge text of *ascii* type) | background-color:#ccc; border-radius:3px; padding:4px;margin-bottom:2px;text-align:center;display:block;min-width:172px;
+| *questionContainerStyle* | css styles for the container of the question/challenge | none ;
+| *labelStyle*        | css style for label | font-size:80%; line-height:100%;
+| *helpBtnClass*      | css class for the help butto | btn-help |
+| *helpBtnText*       | text to show on the help button | ?
+| *refreshBtnClass*   | css class for the refresh button | btn-refresh
+| *refreshBtnText*    | text to show up on the refresh button  | &#8634;
+| *extraHtml*         | extra css styles(with the enclosing style tag) | <style type="text/css"> a.btn-refresh, a.btn-help{ background-color:#fff; text-decoration:none; color:#f66a03; padding:1px 2px; border-radius:2px; vertical-align:top; margin-left:2px; display:inline-block; width:12px; height:12px; text-align:center; line-height:100%; font-size:12px; } </style>
+
+With the above themeOptions you will be able to change the look and feel of the default theme.
+However if you need to change the placements of the elements you will have to write your own theme by extending the DefaultTheme
+Please refer example/theming.php for working example of *themeOptions*.
+
+
+#### Extending the DefaultTheme
+1. The render() and refresh() functions are crucial for rendering the captcha, your theme must have it.
+2. When you extend the DefaultTheme you can use that theme by setting the *theme*
+e.g.
+```
+$captcha = new \MultiCaptcha\Captcha([
+    'secret'=>    "form1-secret-key",
+    'options' =>  [
+        'image' => array(
+            'maxCodeLength' => 8,
+            'font'=>'../src/types/image/comic.ttf',
+            'width'=>180,
+            'theme' => 'CustomTheme1'
+        ),
+        'ascii' => array(
+            'maxCodeLength' => 8,
+            'fonts'=>array(
+                'banner'=> 4,
+                'doom'=> 8,
+                'small'=>'8'
+            ),
+            'theme' => 'CustomTheme2'
+        ),
+    ],
+] );
+```
+Note: you can have your own *themeOptions* when you make your own theme. Also remember to update javascipt refresh function, it needs updating whenever you change the structure/layout.
+
+### Cache
+Multicaptcha uses file cache to record the answered captcha and uses it to block brute-force attack using single captcha and multiple answers.
+It stores the unique id of captcha and expiration time in the record, and that record is kept till the captcha expires.
+It uses file cache to store these records. To avoid the cache becoming too big the records are dispersed over multiple files.
+The number of files to be used for caching is specified by a variable *$cacheSize*
+and the directory in which the files should be stored is specified by *$cacheDir*, you can pass both of these variables as params to the constructor.
+Default cache size is 10, but you can increase it for busy websites.
+Note: The cache directory MUST be writable if you are using the default file cache implementation.
 
 ## Features under progress
 1. Multi-language support
