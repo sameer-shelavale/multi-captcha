@@ -8,7 +8,7 @@ $captcha = new \MultiCaptcha\Captcha([
     'options' =>  [
         'image' => [
             'maxCodeLength' => 8,
-            'font'=>'../src/types/image/comic.ttf',
+            //'font'=>'../src/fonts/comic.ttf', //you can set your custom font here
             'width'=>180
         ]
     ],

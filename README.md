@@ -3,12 +3,11 @@
 As the name says, this is one package to render them all! Multiple types of CAPTCHA in one package. Sometimes we just need to avoid spambots still want to keep the forms user-friendly and sometimes we need complete protection even if becomes a bit complex for users. MultiCaptcha helps you have uniform Captcha validation code over your projects.
 
 ## Key Features
-1. 7 types of captcha supported with multitude of configuration options for each of them
-2. Refresh button
+1. 7 types of captcha supported with multitude of configuration options for each of them.
+2. Shows refresh button (you need to provide refresh url).
 3. Each Captcha challenge can be submitted only once.
 4. Customizable error messages
-5. You can customize the look and feel using *themeOptions*
-6. Or you can write your own theme/s.
+5. You can customize the look and feel using *themeOptions* Or you can write your own theme/s.
 
 ## Supported types of CAPTCHA
 
@@ -116,7 +115,7 @@ Now lets look in details at the supported configuration parameters for each of t
 | *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
 | *width*               |     150     | Optional | Width of the captcha image in pixels |
 | *height*              |     40      | Optional | Height of the captcha image in pixels |
-| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
+| *font*                | src/fonts/segoesc.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### Gif Captcha(GIF Animated captcha)
@@ -131,7 +130,7 @@ Now lets look in details at the supported configuration parameters for each of t
 | *noiseLevel*          |     25      | Optional | Number of background noisy characters to be added as noise |
 | *width*               |     150     | Optional | Width of the captcha image in pixels |
 | *height*              |     40      | Optional | Height of the captcha image in pixels |
-| *font*                | comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
+| *font*                | src/fonts/comic.ttf   | Optional | Path to the font file which will be used for creating the characters |
 
 
 ##### ASCII Captcha
