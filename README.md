@@ -38,7 +38,7 @@ Alternatively, you can add it directly in your composer.json file in require blo
 ```
 {
     "require": {
-        "sameer-shelavale/multi-captcha": "1.0.*"
+        "sameer-shelavale/multi-captcha": "1.3.*"
     }
 }
 ```
