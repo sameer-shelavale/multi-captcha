@@ -22,8 +22,8 @@ class Math extends BaseCaptcha {
 
 
     function generateQuestion( ){
-        $symbols1 = array( '+', '-', 'X', '/' );
-        $symbols2 = array( '+', '-', 'X' );
+        $symbols1 = array( '+', '-', '&times;', '&divide;' );
+        $symbols2 = array( '+', '-', '&times;' );
 
         $q = array();
         $q[] = rand(0,10);
@@ -37,10 +37,10 @@ class Math extends BaseCaptcha {
             }
 
             //select operand
-            if( $operator == '/' ){
+            if( $operator == '&divide;' ){
                 $factors = $this->getFactors( $q[0]);
                 $operand = $factors[array_rand( $factors )];
-            }elseif( $operator == 'X'  ){
+            }elseif( $operator == '&times;'  ){
                 $operand = rand( 0, 5 );
             }else{
                 $operand = rand( 0, 10 );
@@ -60,7 +60,7 @@ class Math extends BaseCaptcha {
     }
 
     function expEval( $exp = array() ){
-        $str = str_replace( 'X', '*',  implode( $exp ) );
+        $str = str_replace( '&divide;', '/', str_replace( '&times;', '*',  implode( $exp ) ) );
         return( eval('return '.$str.';') );
     }
 
