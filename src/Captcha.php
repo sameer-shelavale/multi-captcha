@@ -67,6 +67,8 @@ class Captcha extends BaseCaptcha {
     var $helpUrl = null;
     var $cacheSize = 10; //total files to be used for caching idz of submitted captcha
     var $cacheDir;
+
+    var $data;  // used to store captcha data created by make() function for rendering
     /*
      * constructor
      */
@@ -147,39 +149,30 @@ class Captcha extends BaseCaptcha {
     public function render( $type = null, $refresh=false ){
 
         //first select the type
-        if( count( $this->enabledTypeOptions ) == 0 ){
-            return false;
+        if( !$this->data ){
+            if( !$this->make( $type ) ){
+                return false;
+            }
         }
-
-        if( !$type ){
-            //no type specified, use random captcha from enabled types
-            $type = array_rand( $this->enabledTypeOptions );
-        }elseif( !isset( $this->enabledTypeOptions[ $type ] ) ){
-            //selected type of captcha does not exist or is not enabled
-            return false;
-        }
-
-        //create question data for the selected type
-        $data = $this->data( $type );
 
         if( $type == 'recaptcha' || $type == 'nocaptcha' ){
-            return $data['question']['content'];
+            return $this->data['question']['content'];
         }
 
         //create a theme object of specified theme name for the given captcha type
-        $themeName = $data['theme'];
+        $themeName = $this->data['theme'];
 
         if( $themeName && class_exists( $themeName ) ){
-            $themeObj = new $themeName( $data['themeOptions'] );
+            $themeObj = new $themeName( $this->data['themeOptions'] );
         }else{
-            $themeObj = new Themes\DefaultTheme( $data['themeOptions'] );
+            $themeObj = new Themes\DefaultTheme( $this->data['themeOptions'] );
         }
 
         //now render the captcha by calling the render function of the theme
         if( $refresh ){
-            return $themeObj->refresh( $data );
+            return $themeObj->refresh( $this->data );
         }
-        return $themeObj->render( $data );
+        return $themeObj->render( $this->data );
     }
 
     /*
@@ -191,12 +184,12 @@ class Captcha extends BaseCaptcha {
     }
 
     /*
-     * function data()
+     * function make()
      *      returns the rendering data for the given/random type of captcha
      *      This function is intended to be used for customizing the captcha look
      *      in third party libraries/softwares which may not want to use the themes
      */
-    public function data( $type = null ){
+    public function make( $type = null ){
 
         if( count( $this->enabledTypeOptions ) == 0 ){
             return false;
@@ -211,7 +204,7 @@ class Captcha extends BaseCaptcha {
         }
 
         $obj = $this->getObject( $type );
-        $data = $obj->data();
+        $data = $obj->generate();
 
         $data['type'] = $type;
         if( $type != 'recaptcha' && $type != 'nocaptcha' ){
@@ -230,6 +223,7 @@ class Captcha extends BaseCaptcha {
         $data['refreshUrl'] = $this->refreshUrl;
         $data['helpUrl'] = $this->helpUrl;
 
+        $this->data = $data;
         return $data;
     }
 

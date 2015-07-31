@@ -27,15 +27,15 @@ class BaseCaptcha {
     }
 
     /*
-     * function data()
-     * @return  the details of the generated captcha as array
+     * function generate()
+     * @return  generate captcha details as array
      *          the array includes fields like cipher, question, customFieldName, tooltip etc.
      *          This data in turn is used for rendering the captcha
      */
-    public function data(){
+    public function generate(){
 
         $data = $this->generateQuestion();
-        
+
         $data['customFieldName'] = $this->customFieldName;
         if( is_array( $this->tooltip ) ){
             $data['tooltip'] = isset( $this->tooltip[ $this->language ] )? $this->tooltip[ $this->language ]: '';
