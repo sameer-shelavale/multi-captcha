@@ -155,7 +155,7 @@ class Captcha extends BaseCaptcha {
             }
         }
 
-        if( $type == 'recaptcha' || $type == 'nocaptcha' ){
+        if( $this->data['type'] == 'recaptcha' || $this->data['type'] == 'nocaptcha' ){
             return $this->data['question']['content'];
         }
 
