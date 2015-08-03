@@ -51,10 +51,16 @@ class BaseCaptcha {
 
 
     public function setParams( $options = array() ){
-
+        //get all properties of the class and
+        //make an array with property name as key and lowercase name as value
+        $properties = [];
+        foreach( get_class_vars( get_class( $this) ) as $key => $value ){
+            $properties[ $key ] = strtolower( $key );
+        }
+        //check if lowercase of key exists in lowercase properties
         foreach( $options as $key => $value ){
-            if( property_exists( $this, $key ) ){
-                $this->$key = $value;
+            if( $prop = array_search( strtolower( $key), $properties ) ){
+                $this->$prop = $value;
             }
         }
     }
