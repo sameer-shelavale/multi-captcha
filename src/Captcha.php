@@ -88,7 +88,7 @@ class Captcha extends BaseCaptcha {
             $this->setOptions( [
                 'image' => [
                     'maxCodeLength' => 8,
-                    'font'=>'../src/types/image/comic.ttf',
+                    'font'=>rtrim( __DIR__). '/fonts/comic.ttf',
                     'width'=>175
                 ]
             ] );
